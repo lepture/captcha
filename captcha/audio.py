@@ -14,6 +14,12 @@ import wave
 import struct
 import random
 
+import sys
+if sys.version_info[0] != 2:
+    import functools
+    reduce = functools.reduce
+
+
 __all__ = ['AudioCaptcha']
 
 WAVE_SAMPLE_RATE = 8000  # HZ
@@ -216,7 +222,7 @@ class AudioCaptcha(object):
         return voice
 
     def _noise_pick(self):
-        key = random.choice(self._cache.keys())
+        key = random.choice(self.choices)
         voice = random.choice(self._cache[key])
         voice = copy.copy(voice)
         voice.reverse()
