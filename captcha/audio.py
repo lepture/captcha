@@ -79,7 +79,7 @@ def patch_wave_header(body):
 def create_noise(length, level=4):
     """Create white noise for background"""
     noise = bytearray(length)
-    adjust = 128 - level / 2
+    adjust = 128 - int(level / 2)
     i = 0
     while i < length:
         v = random.randint(0, 256)
@@ -127,15 +127,15 @@ def mix_wave(src, dst):
     for i, sv in enumerate(src):
         dv = dst[i]
         if sv < 128 and dv < 128:
-            dst[i] = sv * dv / 128
+            dst[i] = int(sv * dv / 128)
         else:
-            dst[i] = 2 * (sv + dv) - sv * dv / 128 - 256
+            dst[i] = int(2 * (sv + dv) - sv * dv / 128 - 256)
     return dst
 
 
 BEEP = bytearray(_read_wave_file(os.path.join(DATA_DIR, 'beep.wav')))
 END_BEEP = change_speed(BEEP, 1.4)
-SILENCE = create_silence(WAVE_SAMPLE_RATE / 5)
+SILENCE = create_silence(int(WAVE_SAMPLE_RATE / 5))
 
 
 class AudioCaptcha(object):
@@ -235,7 +235,7 @@ class AudioCaptcha(object):
             sound = self._noise_pick()
             end = pos + len(sound) + 1
             noise[pos:end] = mix_wave(sound, noise[pos:end])
-            pos = end + random.randint(0, WAVE_SAMPLE_RATE / 10)
+            pos = end + random.randint(0, int(WAVE_SAMPLE_RATE / 10))
         return noise
 
     def create_wave_body(self, chars):
