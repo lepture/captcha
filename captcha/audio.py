@@ -1,4 +1,12 @@
 # coding: utf-8
+"""
+    captcha.audio
+    ~~~~~~~~~~~~~
+
+    Generate Audio CAPTCHAs, with built-in digits CAPTCHA.
+
+    This module is totally inspired by https://github.com/dchest/captcha
+"""
 
 import os
 import copy
@@ -6,6 +14,7 @@ import wave
 import struct
 import random
 
+__all__ = ['AudioCaptcha']
 
 WAVE_SAMPLE_RATE = 8000  # HZ
 WAVE_HEADER = bytearray(
@@ -130,16 +139,60 @@ SILENCE = create_silence(WAVE_SAMPLE_RATE / 5)
 
 
 class AudioCaptcha(object):
+    """Create an audio CAPTCHA.
+
+    Create an instance of AudioCaptcha is pretty simple::
+
+        captcha = AudioCaptcha()
+        captcha.write('1234', 'out.wav')
+
+    This module has a built-in digits CAPTCHA, but it is suggested that you
+    create your own voice data library. A voice data library is a directory
+    that contains lots of single charater named directories, for example::
+
+        voices/
+            0/
+            1/
+            2/
+
+    The single charater named directories contain the wave files which pronunce
+    the directory name. A charater directory can has many wave files, this
+    AudioCaptcha will randomly choose one of them.
+
+    You should always use your own voice library::
+
+        captcha = AudioCaptcha(voicedir='/path/to/voices')
+    """
     def __init__(self, voicedir=None):
         if voicedir is None:
             voicedir = DATA_DIR
+
         self._voicedir = voicedir
         self._cache = {}
+        self._choices = []
 
-    def load(self):
+    @property
+    def choices(self):
+        """Available choices for characters to be generated."""
+        if self._choices:
+            return self._choices
         for n in os.listdir(self._voicedir):
             if len(n) == 1 and os.path.isdir(os.path.join(self._voicedir, n)):
-                self._load_data(n)
+                self._choices.append(n)
+        return self._choices
+
+    def random(self, length=6):
+        """Generate a random string with the given length.
+
+        :param length: the return string length.
+        """
+        for i in range(length):
+            yield random.choice(self.choices)
+
+    def load(self):
+        """Load voice data into memory."""
+        for name in self.choices:
+            self._load_data(name)
 
     def _load_data(self, name):
         dirname = os.path.join(self._voicedir, name)
@@ -150,7 +203,7 @@ class AudioCaptcha(object):
                 data.append(bytearray(_read_wave_file(filepath)))
         self._cache[name] = data
 
-    def twist_pick(self, key):
+    def _twist_pick(self, key):
         voice = random.choice(self._cache[key])
 
         # random change speed
@@ -162,7 +215,7 @@ class AudioCaptcha(object):
         voice = change_sound(voice, level)
         return voice
 
-    def pick_for_background(self):
+    def _noise_pick(self):
         key = random.choice(self._cache.keys())
         voice = random.choice(self._cache[key])
         voice = copy.copy(voice)
@@ -179,7 +232,7 @@ class AudioCaptcha(object):
         noise = create_noise(length, 4)
         pos = 0
         while pos < length:
-            sound = self.pick_for_background()
+            sound = self._noise_pick()
             end = pos + len(sound) + 1
             noise[pos:end] = mix_wave(sound, noise[pos:end])
             pos = end + random.randint(0, WAVE_SAMPLE_RATE / 10)
@@ -189,7 +242,7 @@ class AudioCaptcha(object):
         voices = []
         inters = []
         for key in chars:
-            voices.append(self.twist_pick(key))
+            voices.append(self._twist_pick(key))
             v = random.randint(WAVE_SAMPLE_RATE, WAVE_SAMPLE_RATE * 3)
             inters.append(v)
 
@@ -210,7 +263,21 @@ class AudioCaptcha(object):
         return body
 
     def generate(self, chars):
+        """Generate audio CAPTCHA data. The return data is a bytearray.
+
+        :param chars: text to be generated.
+        """
         if not self._cache:
             self.load()
         body = self.create_wave_body(chars)
         return patch_wave_header(body)
+
+    def write(self, chars, output):
+        """Generate and write audio CAPTCHA data to the output.
+
+        :param chars: text to be generated.
+        :param output: output destionation.
+        """
+        data = self.generate(chars)
+        with open(output, 'w') as f:
+            return f.write(data)
