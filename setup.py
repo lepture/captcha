@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-kwargs = {}
-
 try:
+    # python setup.py test
+    import multiprocessing
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
 import captcha
 from email.utils import parseaddr
+
 author, author_email = parseaddr(captcha.__author__)
+kwargs = {}
 
 
 def fopen(filename):
@@ -30,8 +32,10 @@ setup(
     license='BSD',
     zip_safe=False,
     include_package_data=True,
+    test_require=['nose'],
+    test_suite='nose.collector',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved',
