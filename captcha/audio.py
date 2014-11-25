@@ -13,6 +13,7 @@ import copy
 import wave
 import struct
 import random
+import operator
 
 import sys
 if sys.version_info[0] != 2:
@@ -253,10 +254,8 @@ class AudioCaptcha(object):
             inters.append(v)
 
         durations = map(lambda a: len(a), voices)
-        l = max(durations) * len(chars) + reduce(lambda a, b: a + b, inters)
-        bg = self.create_background_noise(l, chars)
-
-        body = BEEP + SILENCE + BEEP + SILENCE + BEEP
+        length = max(durations) * len(chars) + reduce(operator.add, inters)
+        bg = self.create_background_noise(length, chars)
 
         # begin
         pos = inters[0]
@@ -265,8 +264,7 @@ class AudioCaptcha(object):
             bg[pos:end] = mix_wave(v, bg[pos:end])
             pos = end + inters[i]
 
-        body += bg + END_BEEP
-        return body
+        return BEEP + SILENCE + BEEP + SILENCE + BEEP + bg + END_BEEP
 
     def generate(self, chars):
         """Generate audio CAPTCHA data. The return data is a bytearray.
