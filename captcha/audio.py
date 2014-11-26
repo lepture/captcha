@@ -193,8 +193,7 @@ class AudioCaptcha(object):
 
         :param length: the return string length.
         """
-        for i in range(length):
-            yield random.choice(self.choices)
+        return random.sample(self.choices, length)
 
     def load(self):
         """Load voice data into memory."""
