@@ -12,9 +12,52 @@ from PIL import ImageFilter
 from PIL.ImageDraw import Draw
 from PIL.ImageFont import truetype
 from io import BytesIO
+try:
+    from wheezy import captcha as wheezy_captcha
+except ImportError:
+    wheezy_captcha = None
 
 
-class ImageCaptcha(object):
+class _Captcha(object):
+    def generate(self, chars):
+        im = self.generate_image(chars)
+        out = BytesIO()
+        im.save(out, format='png')
+        out.seek(0)
+        return out
+
+    def write(self, chars, output):
+        im = self.generate_image(chars)
+        return im.save(output, format='png')
+
+
+class WheezyCaptcha(_Captcha):
+    def __init__(self, width=200, height=75, fonts=None):
+        self._width = width
+        self._height = height
+        self._fonts = fonts
+
+    def generate_image(self, chars):
+        text_drawings = [
+            wheezy_captcha.warp(),
+            wheezy_captcha.rotate(),
+            wheezy_captcha.offset(),
+        ]
+        fn = wheezy_captcha.captcha(
+            drawings=[
+                wheezy_captcha.background(),
+                wheezy_captcha.text(fonts=self._fonts, drawings=text_drawings),
+                wheezy_captcha.curve(),
+                wheezy_captcha.noise(),
+                wheezy_captcha.smooth(),
+            ],
+            width=self._width,
+            height=self._height,
+        )
+        return fn(chars)
+
+
+class ImageCaptcha(_Captcha):
     def __init__(self, width=160, height=60, fonts=None):
         self._width = width
         self._height = height
