@@ -58,6 +58,11 @@ class WheezyCaptcha(_Captcha):
 
 
 class ImageCaptcha(_Captcha):
+    """Create an image CAPTCHA.
+
+    Many of the codes are borrowed from wheezy.captcha, with a modification
+    for memory/developer friendly.
+    """
     def __init__(self, width=160, height=60, fonts=None):
         self._width = width
         self._height = height
