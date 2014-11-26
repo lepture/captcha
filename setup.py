@@ -32,6 +32,7 @@ setup(
     license='BSD',
     zip_safe=False,
     include_package_data=True,
+    install_requires=['Pillow'],
     test_require=['nose'],
     test_suite='nose.collector',
     classifiers=[
