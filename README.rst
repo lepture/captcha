@@ -14,8 +14,11 @@ A captcha library that generates audio and image CAPTCHAs.
 Features
 --------
 
-1. Audio CAPTCHAs
+1. Audio CAPTCHAs `DEMO <https://github.com/lepture/captcha/releases/download/v0.1-beta/out.wav>`_
 2. Image CAPTCHAs
+
+.. image:: https://cloud.githubusercontent.com/assets/290496/5213632/95e68768-764b-11e4-862f-d95a8f776cdd.png
+
 
 Installation
 ------------
