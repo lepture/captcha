@@ -21,10 +21,18 @@ except ImportError:
 DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
 DEFAULT_FONTS = [os.path.join(DATA_DIR, 'DroidSansMono.ttf')]
 
+if wheezy_captcha:
+    __all__ = ['ImageCaptcha', 'WheezyCaptcha']
+else:
+    __all__ = ['ImageCaptcha']
+
 
 class _Captcha(object):
     def generate(self, chars):
-        """Generate an Image Captcha of the given characters."""
+        """Generate an Image Captcha of the given characters.
+
+        :param chars: text to be generated.
+        """
         im = self.generate_image(chars)
         out = BytesIO()
         im.save(out, format='png')
@@ -32,11 +40,17 @@ class _Captcha(object):
         return out
 
     def write(self, chars, output):
+        """Generate and write an image CAPTCHA data to the output.
+
+        :param chars: text to be generated.
+        :param output: output destionation.
+        """
         im = self.generate_image(chars)
         return im.save(output, format='png')
 
 
 class WheezyCaptcha(_Captcha):
+    """Create an image CAPTCHA with wheezy.captcha."""
     def __init__(self, width=200, height=75, fonts=None):
         self._width = width
         self._height = height
@@ -66,7 +80,20 @@ class ImageCaptcha(_Captcha):
     """Create an image CAPTCHA.
 
     Many of the codes are borrowed from wheezy.captcha, with a modification
-    for memory/developer friendly.
+    for memory and developer friendly.
+
+    ImageCaptcha has one built-in font, DroidSansMono, which is licensed under
+    Apache License 2. You should always use your own fonts::
+
+        captcha = ImageCaptcha(fonts=['/path/to/A.ttf', '/path/to/B.ttf'])
+
+    You can put as many fonts as you like. But be aware of your memory, all of
+    the fonts are loaded into your memory, so keep them a lot, but not too
+    many.
+
+    :param width: The width of the CAPTCHA image.
+    :param height: The height of the CAPTCHA image.
+    :param fonts: Fonts to be used to generate CAPTCHA images.
     """
     def __init__(self, width=160, height=60, fonts=None):
         self._width = width
@@ -110,6 +137,14 @@ class ImageCaptcha(_Captcha):
         return image
 
     def create_captcha_image(self, chars, color, background):
+        """Create the CAPTCHA image itself.
+
+        :param chars: text to be generated.
+        :param color: color of the text.
+        :param background: color of the background.
+
+        The color should be a tuple of 3 numbers, such as (0, 255, 255).
+        """
         image = Image.new('RGB', (self._width, self._height), background)
         draw = Draw(image)
 
@@ -166,6 +201,10 @@ class ImageCaptcha(_Captcha):
         return image
 
     def generate_image(self, chars):
+        """Generate the image of the given characters.
+
+        :param chars: text to be generated.
+        """
         background = random_color(238, 255)
         color = random_color(0, 200, random.randint(220, 255))
         im = self.create_captcha_image(chars, color, background)
