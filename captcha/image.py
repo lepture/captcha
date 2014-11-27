@@ -14,7 +14,7 @@ from PIL.ImageDraw import Draw
 from PIL.ImageFont import truetype
 from io import BytesIO
 try:
-    from wheezy import captcha as wheezy_captcha
+    from wheezy.captcha import image as wheezy_captcha
 except ImportError:
     wheezy_captcha = None
 
