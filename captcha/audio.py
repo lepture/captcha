@@ -36,7 +36,7 @@ def _read_wave_file(filepath):
     w = wave.open(filepath)
     data = w.readframes(-1)
     w.close()
-    return data
+    return bytearray(data)
 
 
 def change_speed(body, speed=1):
@@ -62,8 +62,6 @@ def patch_wave_header(body):
 
     :param body: the wave content body, it should be bytearray.
     """
-    assert isinstance(body, bytearray)
-
     length = len(body)
 
     padded = length + length % 2
@@ -106,8 +104,6 @@ def create_silence(length):
 
 
 def change_sound(body, level=1):
-    assert isinstance(body, bytearray)
-
     if level == 1:
         return body
 
@@ -140,7 +136,7 @@ def mix_wave(src, dst):
     return dst
 
 
-BEEP = bytearray(_read_wave_file(os.path.join(DATA_DIR, 'beep.wav')))
+BEEP = _read_wave_file(os.path.join(DATA_DIR, 'beep.wav'))
 END_BEEP = change_speed(BEEP, 1.4)
 SILENCE = create_silence(int(WAVE_SAMPLE_RATE / 5))
 
@@ -206,7 +202,7 @@ class AudioCaptcha(object):
         for f in os.listdir(dirname):
             filepath = os.path.join(dirname, f)
             if f.endswith('.wav') and os.path.isfile(filepath):
-                data.append(bytearray(_read_wave_file(filepath)))
+                data.append(_read_wave_file(filepath))
         self._cache[name] = data
 
     def _twist_pick(self, key):
