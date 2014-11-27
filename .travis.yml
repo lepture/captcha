@@ -7,6 +7,13 @@ python:
     - "3.4"
     - "pypy"
 
+env:
+    - DEPS=Pillow
+    - DEPS=Pillow wheezy.captcha
+
+install:
+    - if [[ $TRAVIS_PYTHON_VERSION != 'pypy']; then pip install -q $DEPS; fi
+
 script:
     - python setup.py -q nosetests
 
