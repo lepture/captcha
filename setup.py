@@ -36,7 +36,7 @@ setup(
     license='BSD',
     zip_safe=False,
     include_package_data=True,
-    test_require=['nose'],
+    tests_require=['nose'],
     test_suite='nose.collector',
     classifiers=[
         'Development Status :: 3 - Alpha',
