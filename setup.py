@@ -31,7 +31,7 @@ setup(
     author_email=author_email,
     url=captcha.__homepage__,
     packages=['captcha'],
-    description=captcha.__doc__,
+    description='A captcha library that generates audio and image CAPTCHAs.',
     long_description=fopen('README.rst'),
     license='BSD',
     zip_safe=False,
