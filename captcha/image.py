@@ -6,6 +6,7 @@
     Generate Image CAPTCHAs, just the normal image CAPTCHAs you are using.
 """
 
+import os
 import random
 from PIL import Image
 from PIL import ImageFilter
@@ -17,9 +18,13 @@ try:
 except ImportError:
     wheezy_captcha = None
 
+DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
+DEFAULT_FONTS = [os.path.join(DATA_DIR, 'DroidSansMono.ttf')]
+
 
 class _Captcha(object):
     def generate(self, chars):
+        """Generate an Image Captcha of the given characters."""
         im = self.generate_image(chars)
         out = BytesIO()
         im.save(out, format='png')
@@ -35,7 +40,7 @@ class WheezyCaptcha(_Captcha):
     def __init__(self, width=200, height=75, fonts=None):
         self._width = width
         self._height = height
-        self._fonts = fonts
+        self._fonts = fonts or DEFAULT_FONTS
 
     def generate_image(self, chars):
         text_drawings = [
@@ -66,7 +71,7 @@ class ImageCaptcha(_Captcha):
     def __init__(self, width=160, height=60, fonts=None):
         self._width = width
         self._height = height
-        self._fonts = fonts
+        self._fonts = fonts or DEFAULT_FONTS
         self._truefonts = []
 
     @property
@@ -168,17 +173,6 @@ class ImageCaptcha(_Captcha):
         self.create_noise_curve(im, color)
         im = im.filter(ImageFilter.SMOOTH)
         return im
-
-    def generate(self, chars):
-        im = self.generate_image(chars)
-        out = BytesIO()
-        im.save(out, format='png')
-        out.seek(0)
-        return out
-
-    def write(self, chars, output):
-        im = self.generate_image(chars)
-        return im.save(output, format='png')
 
 
 def random_color(start, end, opacity=None):
