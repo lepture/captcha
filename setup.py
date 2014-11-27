@@ -8,11 +8,15 @@ try:
 except ImportError:
     from distutils.core import setup
 
+import sys
 import captcha
 from email.utils import parseaddr
 
-author, author_email = parseaddr(captcha.__author__)
 kwargs = {}
+if not hasattr(sys, 'pypy_version_info'):
+    kwargs['install_requires'] = ['Pillow']
+
+author, author_email = parseaddr(captcha.__author__)
 
 
 def fopen(filename):
@@ -32,7 +36,6 @@ setup(
     license='BSD',
     zip_safe=False,
     include_package_data=True,
-    install_requires=['Pillow'],
     test_require=['nose'],
     test_suite='nose.collector',
     classifiers=[
