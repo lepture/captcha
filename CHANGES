@@ -1,0 +1,21 @@
+Changlog
+========
+
+The changelog of Captcha.
+
+
+Version 0.1.1
+-------------
+
+Released on Dec 2, 2014, this is a bugfix release.
+
+- Use cStringIO in Python 2 instead of BytesIO
+- Fix random.randint for Python 3
+- Add font_sizes parameters for ImageCaptcha when width is too small
+
+
+Version 0.1
+-----------
+
+
+Released on Nov 27, 2014, the very first release.
