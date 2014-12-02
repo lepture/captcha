@@ -97,11 +97,13 @@ class ImageCaptcha(_Captcha):
     :param width: The width of the CAPTCHA image.
     :param height: The height of the CAPTCHA image.
     :param fonts: Fonts to be used to generate CAPTCHA images.
+    :param font_sizes: Random choose a font size from this parameters.
     """
-    def __init__(self, width=160, height=60, fonts=None):
+    def __init__(self, width=160, height=60, fonts=None, font_sizes=None):
         self._width = width
         self._height = height
         self._fonts = fonts or DEFAULT_FONTS
+        self._font_sizes = font_sizes or (46, 58, 68)
         self._truefonts = []
 
     @property
@@ -111,7 +113,7 @@ class ImageCaptcha(_Captcha):
         self._truefonts = tuple([
             truetype(n, s)
             for n in self._fonts
-            for s in (46, 58, 68)
+            for s in self._font_sizes
         ])
         return self._truefonts
 
