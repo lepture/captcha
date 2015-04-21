@@ -31,25 +31,27 @@ else:
 
 
 class _Captcha(object):
-    def generate(self, chars):
+    def generate(self, chars, format='jpeg'):
         """Generate an Image Captcha of the given characters.
 
         :param chars: text to be generated.
+        :param format: image file format
         """
         im = self.generate_image(chars)
         out = BytesIO()
-        im.save(out, format='png')
+        im.save(out, format=format)
         out.seek(0)
         return out
 
-    def write(self, chars, output):
+    def write(self, chars, output, format='jpeg'):
         """Generate and write an image CAPTCHA data to the output.
 
         :param chars: text to be generated.
         :param output: output destionation.
+        :param format: image file format
         """
         im = self.generate_image(chars)
-        return im.save(output, format='png')
+        return im.save(output, format=format)
 
 
 class WheezyCaptcha(_Captcha):
