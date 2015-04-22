@@ -31,7 +31,7 @@ else:
 
 
 class _Captcha(object):
-    def generate(self, chars, format='jpeg'):
+    def generate(self, chars, format='png'):
         """Generate an Image Captcha of the given characters.
 
         :param chars: text to be generated.
@@ -43,7 +43,7 @@ class _Captcha(object):
         out.seek(0)
         return out
 
-    def write(self, chars, output, format='jpeg'):
+    def write(self, chars, output, format='png'):
         """Generate and write an image CAPTCHA data to the output.
 
         :param chars: text to be generated.
