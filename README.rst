@@ -30,7 +30,9 @@ Install captcha with pip::
 Usage
 -----
 
-Audio and Image CAPTCHAs are in seprated modules::
+Audio and Image CAPTCHAs are in seprated modules:
+
+.. code:: python
 
     from io import BytesIO
     from captcha.audio import AudioCaptcha

@@ -3,6 +3,13 @@ Changlog
 
 The changelog of Captcha.
 
+Version 0.2
+-----------
+
+Released on Aug 12, 2015.
+
+- File format of Image CAPTCHA can be specified
+
 
 Version 0.1.1
 -------------
@@ -16,6 +23,5 @@ Released on Dec 2, 2014, this is a bugfix release.
 
 Version 0.1
 -----------
-
 
 Released on Nov 27, 2014, the very first release.
