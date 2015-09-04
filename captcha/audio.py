@@ -278,5 +278,5 @@ class AudioCaptcha(object):
         :param output: output destionation.
         """
         data = self.generate(chars)
-        with open(output, 'w') as f:
+        with open(output, 'wb') as f:
             return f.write(data)
