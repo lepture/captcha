@@ -161,7 +161,7 @@ class ImageCaptcha(_Captcha):
 
             dx = random.randint(0, 4)
             dy = random.randint(0, 6)
-            im = Image.new('RGB', (w + dx, h + dy), background)
+            im = Image.new('RGBA', (w + dx, h + dy))
             Draw(im).text((dx, dy), c, font=font, fill=color)
 
             # rotate
@@ -197,13 +197,14 @@ class ImageCaptcha(_Captcha):
         image = image.resize((width, self._height))
 
         average = int(text_width / len(chars))
-        rand = int(0.15 * average)
+        rand = int(0.25 * average)
         offset = int(average * 0.1)
+
         for im in images:
             w, h = im.size
             mask = im.convert('L').point(lambda i: i * 1.97)
             image.paste(im, (offset, int((self._height - h) / 2)), mask)
-            offset = offset + w + random.randint(-rand, rand)
+            offset = offset + w + random.randint(-rand, 0)
 
         return image
 
