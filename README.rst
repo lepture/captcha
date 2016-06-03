@@ -9,7 +9,9 @@ A captcha library that generates audio and image CAPTCHAs.
    :target: https://ci.appveyor.com/project/lepture/captcha
 .. image:: https://coveralls.io/repos/lepture/captcha/badge.svg?branch=master
    :target: https://coveralls.io/r/lepture/captcha
-
+.. image:: https://img.shields.io/badge/donate-lepture-green.svg
+   :target: https://lepture.herokuapp.com/?amount=1000&reason=lepture%2Fcaptcha
+   :alt: Donate lepture
 
 Features
 --------
@@ -34,7 +36,6 @@ Audio and Image CAPTCHAs are in seprated modules:
 
 .. code:: python
 
-    from io import BytesIO
     from captcha.audio import AudioCaptcha
     from captcha.image import ImageCaptcha
 
@@ -42,11 +43,9 @@ Audio and Image CAPTCHAs are in seprated modules:
     image = ImageCaptcha(fonts=['/path/A.ttf', '/path/B.ttf'])
 
     data = audio.generate('1234')
-    assert isinstance(data, bytearray)
     audio.write('1234', 'out.wav')
 
     data = image.generate('1234')
-    assert isinstance(data, BytesIO)
     image.write('1234', 'out.png')
 
 This is the APIs for your daily works. We do have built-in voice data and font
