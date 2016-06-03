@@ -3,15 +3,15 @@ Captcha
 
 A captcha library that generates audio and image CAPTCHAs.
 
+.. image:: https://img.shields.io/badge/donate-lepture-green.svg
+   :target: https://lepture.herokuapp.com/?amount=1000&reason=lepture%2Fcaptcha
+   :alt: Donate lepture
 .. image:: https://travis-ci.org/lepture/captcha.svg?branch=master
    :target: https://travis-ci.org/lepture/captcha
 .. image:: https://ci.appveyor.com/api/projects/status/amm21f13lx4wuura?svg=true
    :target: https://ci.appveyor.com/project/lepture/captcha
 .. image:: https://coveralls.io/repos/lepture/captcha/badge.svg?branch=master
    :target: https://coveralls.io/r/lepture/captcha
-.. image:: https://img.shields.io/badge/donate-lepture-green.svg
-   :target: https://lepture.herokuapp.com/?amount=1000&reason=lepture%2Fcaptcha
-   :alt: Donate lepture
 
 Features
 --------
