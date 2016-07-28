@@ -33,7 +33,7 @@ else:
 table  =  []
 for  i  in  range( 256 ):
     table.append( i * 1.97 )
-
+  
 class _Captcha(object):
     def generate(self, chars, format='png'):
         """Generate an Image Captcha of the given characters.
