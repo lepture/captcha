@@ -30,6 +30,10 @@ else:
     __all__ = ['ImageCaptcha']
 
 
+table  =  []
+for  i  in  range( 256 ):
+    table.append( i * 1.97 )
+  
 class _Captcha(object):
     def generate(self, chars, format='png'):
         """Generate an Image Captcha of the given characters.
@@ -202,7 +206,7 @@ class ImageCaptcha(_Captcha):
 
         for im in images:
             w, h = im.size
-            mask = im.convert('L').point(lambda i: i * 1.97)
+            mask = im.convert('L').point(table)
             image.paste(im, (offset, int((self._height - h) / 2)), mask)
             offset = offset + w + random.randint(-rand, 0)
 
