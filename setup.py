@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 try:
-    # python setup.py test
-    import multiprocessing
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
