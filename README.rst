@@ -4,7 +4,7 @@ Captcha
 A captcha library that generates audio and image CAPTCHAs.
 
 .. image:: https://img.shields.io/badge/donate-lepture-green.svg
-   :target: https://lepture.herokuapp.com/?amount=1000&reason=lepture%2Fcaptcha
+   :target: https://typlog.com/donate?amount=10&reason=lepture%2Fcaptcha
    :alt: Donate lepture
 .. image:: https://travis-ci.org/lepture/captcha.svg?branch=master
    :target: https://travis-ci.org/lepture/captcha
