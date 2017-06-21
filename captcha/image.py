@@ -33,7 +33,8 @@ else:
 table  =  []
 for  i  in  range( 256 ):
     table.append( i * 1.97 )
-  
+
+
 class _Captcha(object):
     def generate(self, chars, format='png'):
         """Generate an Image Captcha of the given characters.
@@ -109,7 +110,7 @@ class ImageCaptcha(_Captcha):
         self._width = width
         self._height = height
         self._fonts = fonts or DEFAULT_FONTS
-        self._font_sizes = font_sizes or (46, 58, 68)
+        self._font_sizes = font_sizes or (42, 50, 56)
         self._truefonts = []
 
     @property
