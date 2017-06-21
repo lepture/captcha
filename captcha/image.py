@@ -128,7 +128,7 @@ class ImageCaptcha(_Captcha):
         w, h = image.size
         x1 = random.randint(0, int(w / 5))
         x2 = random.randint(w - int(w / 5), w)
-        y1 = random.randint(h / 5, h - int(h / 5))
+        y1 = random.randint(int(h / 5), h - int(h / 5))
         y2 = random.randint(y1, h - int(h / 5))
         points = [(x1, y1), (x2, y2)]
         end = random.randint(160, 200)
