@@ -3,6 +3,22 @@ Changlog
 
 The changelog of Captcha.
 
+Version 0.2.3
+-------------
+
+Released on Jun 21, 2017
+
+- Fix image width bug
+- Fix non-integer error
+
+Version 0.2.2
+-------------
+
+Released on Mar 17, 2017
+
+- Fix memory leak
+
+
 Version 0.2.1
 -------------
 
