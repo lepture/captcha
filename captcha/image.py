@@ -210,6 +210,9 @@ class ImageCaptcha(_Captcha):
             image.paste(im, (offset, int((self._height - h) / 2)), mask)
             offset = offset + w + random.randint(-rand, 0)
 
+        if width > self._width:
+            image = image.resize((self._width, self._height))
+
         return image
 
     def generate_image(self, chars):
