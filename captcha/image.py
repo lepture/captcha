@@ -131,7 +131,7 @@ class ImageCaptcha(_Captcha):
         x2 = random.randint(w - int(w / 5), w)
         y1 = random.randint(int(h / 5), h - int(h / 5))
         y2 = random.randint(y1, h - int(h / 5))
-        points = [(x1, y1), (x2, y2)]
+        points = [x1, y1, x2, y2]
         end = random.randint(160, 200)
         start = random.randint(0, 20)
         Draw(image).arc(points, start, end, fill=color)
