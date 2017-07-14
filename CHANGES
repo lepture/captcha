@@ -3,6 +3,15 @@ Changlog
 
 The changelog of Captcha.
 
+Version 0.2.4
+-------------
+
+Released on Jul 14, 2017
+
+- Fix compatibility with PIL
+
+https://github.com/lepture/captcha/pull/18
+
 Version 0.2.3
 -------------
 
