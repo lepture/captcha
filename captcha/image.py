@@ -52,7 +52,7 @@ class _Captcha(object):
         """Generate and write an image CAPTCHA data to the output.
 
         :param chars: text to be generated.
-        :param output: output destionation.
+        :param output: output destination.
         :param format: image file format
         """
         im = self.generate_image(chars)
