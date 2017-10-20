@@ -112,7 +112,7 @@ def change_sound(body, level=1):
         if v > 128:
             v = (v - 128) * level + 128
             v = max(int(v), 128)
-            v = min(v, 256)
+            v = min(v, 255)
         elif v < 128:
             v = 128 - (128 - v) * level
             v = min(int(v), 128)
