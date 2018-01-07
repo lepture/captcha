@@ -8,6 +8,7 @@
 
 import os
 import random
+import base64
 from PIL import Image
 from PIL import ImageFilter
 from PIL.ImageDraw import Draw
@@ -36,16 +37,22 @@ for  i  in  range( 256 ):
 
 
 class _Captcha(object):
-    def generate(self, chars, format='png'):
+    def generate(self, chars, format='png', data_url=False):
         """Generate an Image Captcha of the given characters.
 
         :param chars: text to be generated.
-        :param format: image file format
+        :param format: image file format.
+        :param data_url: whether convert out to data url.
         """
         im = self.generate_image(chars)
         out = BytesIO()
         im.save(out, format=format)
         out.seek(0)
+        if data_url:
+            out = 'data:image/%s;base64,%s' % (
+                format,
+                base64.b64encode(out.read()),
+            )
         return out
 
     def write(self, chars, output, format='png'):
@@ -53,7 +60,7 @@ class _Captcha(object):
 
         :param chars: text to be generated.
         :param output: output destination.
-        :param format: image file format
+        :param format: image file format.
         """
         im = self.generate_image(chars)
         return im.save(output, format=format)
