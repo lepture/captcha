@@ -14,6 +14,7 @@ import wave
 import struct
 import random
 import operator
+import base64
 
 import sys
 if sys.version_info[0] != 2:
@@ -261,15 +262,21 @@ class AudioCaptcha(object):
 
         return BEEP + SILENCE + BEEP + SILENCE + BEEP + bg + END_BEEP
 
-    def generate(self, chars):
+    def generate(self, chars, data_url=False):
         """Generate audio CAPTCHA data. The return data is a bytearray.
 
         :param chars: text to be generated.
+        :param data_url: whether convert the return data to data url.
         """
         if not self._cache:
             self.load()
         body = self.create_wave_body(chars)
-        return patch_wave_header(body)
+        data = patch_wave_header(body)
+        if data_url:
+            data = 'data:audio/wav;base64,%s' % (
+                base64.b64encode(data),
+            )
+        return data
 
     def write(self, chars, output):
         """Generate and write audio CAPTCHA data to the output.
