@@ -194,6 +194,8 @@ class ImageCaptcha(_Captcha):
 
         images = []
         for c in chars:
+            if random.random() > 0.5:
+                images.append(_draw_character(" "))
             images.append(_draw_character(c))
 
         text_width = sum([im.size[0] for im in images])
