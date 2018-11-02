@@ -3,9 +3,12 @@ Captcha
 
 A captcha library that generates audio and image CAPTCHAs.
 
-.. image:: https://img.shields.io/badge/donate-lepture-green.svg
-   :target: https://typlog.com/donate?amount=10&reason=lepture%2Fcaptcha
+.. image:: https://img.shields.io/badge/donate-lepture-ff69b4.svg
+   :target: https://lepture.com/donate
    :alt: Donate lepture
+.. image:: https://img.shields.io/badge/I0-patreon-f96854.svg
+   :target: https://patreon.com/lepture
+   :alt: Become a Patreon
 .. image:: https://travis-ci.org/lepture/captcha.svg?branch=master
    :target: https://travis-ci.org/lepture/captcha
 .. image:: https://ci.appveyor.com/api/projects/status/amm21f13lx4wuura?svg=true
