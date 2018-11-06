@@ -3,6 +3,13 @@ Changlog
 
 The changelog of Captcha.
 
+Version 0.3
+-----------
+
+Released on Nov 6, 2018
+
+- Support Python 3.5, 3.6, 3.7
+
 Version 0.2.4
 -------------
 
