@@ -54,6 +54,18 @@ Audio and Image CAPTCHAs are in seprated modules:
 This is the APIs for your daily works. We do have built-in voice data and font
 data. But it is suggested that you use your own voice and font data.
 
+Voices
+------
+
+We can build our customized voice library with the help of espeak and ffmpeg
+````
+export ESLANG=en
+
+mkdir $ESLANG
+
+for i in {a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,0,1,2,3,4,5,6,7,8,9}; do mkdir $ESLANG/$i; espeak -a 150 -s 100 -p 15 -v$ESLANG $i -w $ESLANG/$i/orig_default.wav; ffmpeg -i $ESLANG/$i/orig_default.wav -ar 8000 -ac 1 -acodec pcm_u8 $ESLANG/$i/default.wav; rm $ESLANG/$i/orig_default.wav; done
+````
+
 
 Contribution
 ------------
