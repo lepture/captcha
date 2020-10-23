@@ -39,8 +39,7 @@ Audio and Image CAPTCHAs are in seprated modules:
 
 .. code:: python
 
-    from captcha import AudioCaptcha
-    from captcha import ImageCaptcha
+    from captcha import AudioCaptcha, ImageCaptcha
 
     audio = AudioCaptcha(voicedir='/path/to/voices')
     image = ImageCaptcha(fonts=['/path/A.ttf', '/path/B.ttf'])
