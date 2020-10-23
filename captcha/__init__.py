@@ -15,4 +15,4 @@ __author__ = 'Hsiaoming Yang <me@lepture.com>'
 __homepage__ = 'https://github.com/lepture/captcha'
 
 from .audio import AudioCaptcha
-from .image import ImageCaptcha
+from .image import ImageCaptcha, WheezyCaptcha

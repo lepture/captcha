@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from captcha.audio import AudioCaptcha
+from captcha import AudioCaptcha
 
 
 def test_audio_generate():
