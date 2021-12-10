@@ -32,7 +32,7 @@ else:
 
 table  =  []
 for  i  in  range( 256 ):
-    table.append( i * 1.97 )
+    table.append( int(i * 1.97) )
 
 
 class _Captcha(object):
