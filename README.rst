@@ -35,7 +35,7 @@ Install captcha with pip::
 Usage
 -----
 
-Audio and Image CAPTCHAs are in seprated modules:
+Audio and Image CAPTCHAs are in separated modules:
 
 .. code:: python
 
