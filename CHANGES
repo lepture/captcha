@@ -3,6 +3,14 @@ Changlog
 
 The changelog of Captcha.
 
+Version 0.4
+-----------
+
+Released on Mar 15, 2022
+
+- Fix "'float' object cannot be interpreted as an integer" in Python 3.10.0
+
+
 Version 0.3
 -----------
 
