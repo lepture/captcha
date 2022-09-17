@@ -29,6 +29,15 @@ if wheezy_captcha:
 else:
     __all__ = ['ImageCaptcha']
 
+try:
+    _QUAD = Image.Transform.QUAD
+except AttributeError:
+    _QUAD = Image.QUAD
+
+try:
+    _BILINEAR = Image.Resampling.BILINEAR
+except AttributeError:
+    _BILINEAR = Image.BILINEAR
 
 table  =  []
 for  i  in  range( 256 ):
@@ -162,8 +171,10 @@ class ImageCaptcha(_Captcha):
 
         def _draw_character(c):
             font = random.choice(self.truefonts)
-            w, h = draw.textsize(c, font=font)
-
+            try:
+                _, _, w, h = draw.multiline_textbbox((1, 1),c, font=font)
+            except AttributeError:
+                w, h = draw.textsize(c, font=font)
             dx = random.randint(0, 4)
             dy = random.randint(0, 6)
             im = Image.new('RGBA', (w + dx, h + dy))
@@ -171,7 +182,7 @@ class ImageCaptcha(_Captcha):
 
             # rotate
             im = im.crop(im.getbbox())
-            im = im.rotate(random.uniform(-30, 30), Image.BILINEAR, expand=1)
+            im = im.rotate(random.uniform(-30, 30), _BILINEAR, expand=1)
 
             # warp
             dx = w * random.uniform(0.1, 0.3)
@@ -189,7 +200,7 @@ class ImageCaptcha(_Captcha):
                 w2 - x2, -y1,
             )
             im = im.resize((w2, h2))
-            im = im.transform((w, h), Image.QUAD, data)
+            im = im.transform((w, h), _QUAD, data)
             return im
 
         images = []
