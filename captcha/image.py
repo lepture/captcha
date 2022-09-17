@@ -172,9 +172,10 @@ class ImageCaptcha(_Captcha):
         def _draw_character(c):
             font = random.choice(self.truefonts)
             try:
-                _, _, w, h = draw.multiline_textbbox((1, 1),c, font=font)
+                _, _, w, h = draw.textbbox((1, 1), c, font=font)
             except AttributeError:
                 w, h = draw.textsize(c, font=font)
+
             dx = random.randint(0, 4)
             dy = random.randint(0, 6)
             im = Image.new('RGBA', (w + dx, h + dy))
