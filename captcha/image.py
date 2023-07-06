@@ -174,7 +174,8 @@ class ImageCaptcha(_Captcha):
             try:
                 _, _, w, h = draw.textbbox((1, 1), c, font=font)
             except AttributeError:
-                w, h = draw.textsize(c, font=font)
+                w, h = draw.textbbox((1, 1), c, font=font)[2:]
+                ## BUG FIX AFTER THE NEW PILLOW RELEASE
 
             dx = random.randint(0, 4)
             dy = random.randint(0, 6)
