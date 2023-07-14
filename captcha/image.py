@@ -8,10 +8,13 @@
 
 import os
 import random
+import string
+
 from PIL import Image
 from PIL import ImageFilter
 from PIL.ImageDraw import Draw
 from PIL.ImageFont import truetype
+
 try:
     from cStringIO import StringIO as BytesIO
 except ImportError:
@@ -170,7 +173,7 @@ class ImageCaptcha(_Captcha):
         image = Image.new('RGB', (self._width, self._height), background)
         draw = Draw(image)
 
-        def _draw_character(c):
+        def _draw_character(c: str, rotate: bool = True):
             font = random.choice(self.truefonts)
             try:
                 _, _, w, h = draw.textbbox((1, 1), c, font=font)
@@ -210,7 +213,12 @@ class ImageCaptcha(_Captcha):
         for c in chars:
             if random.random() > 0.5:
                 images.append(_draw_character(" "))
-            images.append(_draw_character(c))
+
+            if c in string.punctuation:
+                images.append(_draw_character(c, False))
+
+            else:
+                images.append(_draw_character(c, rotate))
 
         text_width = sum([im.size[0] for im in images])
 
