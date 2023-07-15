@@ -240,7 +240,7 @@ class ImageCaptcha(_Captcha):
 
         return image
 
-    def generate_image(self, chars: str, rotate: bool = True, filters: list = []):
+    def generate_image(self, chars: str, rotate: bool = True, filters: list = None):
         """Generate the image of the given characters.
 
         :param chars: text to be generated.
