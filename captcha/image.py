@@ -8,10 +8,13 @@
 
 import os
 import random
+import string
+
 from PIL import Image
 from PIL import ImageFilter
 from PIL.ImageDraw import Draw
 from PIL.ImageFont import truetype
+
 try:
     from cStringIO import StringIO as BytesIO
 except ImportError:
@@ -157,19 +160,20 @@ class ImageCaptcha(_Captcha):
             number -= 1
         return image
 
-    def create_captcha_image(self, chars, color, background):
+    def create_captcha_image(self, chars, color, background, rotate = True):
         """Create the CAPTCHA image itself.
 
         :param chars: text to be generated.
         :param color: color of the text.
         :param background: color of the background.
+        :param rotate: whether to rotate the text?
 
         The color should be a tuple of 3 numbers, such as (0, 255, 255).
         """
         image = Image.new('RGB', (self._width, self._height), background)
         draw = Draw(image)
 
-        def _draw_character(c):
+        def _draw_character(c, rotate = True):
             font = random.choice(self.truefonts)
             try:
                 _, _, w, h = draw.textbbox((1, 1), c, font=font)
@@ -182,8 +186,9 @@ class ImageCaptcha(_Captcha):
             Draw(im).text((dx, dy), c, font=font, fill=color)
 
             # rotate
-            im = im.crop(im.getbbox())
-            im = im.rotate(random.uniform(-30, 30), _BILINEAR, expand=1)
+            if rotate:
+                im = im.crop(im.getbbox())
+                im = im.rotate(random.uniform(-30, 30), _BILINEAR, expand=1)
 
             # warp
             dx = w * random.uniform(0.1, 0.3)
@@ -208,7 +213,12 @@ class ImageCaptcha(_Captcha):
         for c in chars:
             if random.random() > 0.5:
                 images.append(_draw_character(" "))
-            images.append(_draw_character(c))
+
+            if c in string.punctuation:
+                images.append(_draw_character(c, False))
+
+            else:
+                images.append(_draw_character(c, rotate))
 
         text_width = sum([im.size[0] for im in images])
 
@@ -230,17 +240,23 @@ class ImageCaptcha(_Captcha):
 
         return image
 
-    def generate_image(self, chars):
+    def generate_image(self, chars, rotate = True, filters = None):
         """Generate the image of the given characters.
 
         :param chars: text to be generated.
+        :param rotate: whether to rotate the text?
+        :param filters: filter list from which a random one will be taken and applied to the image.
         """
         background = random_color(238, 255)
         color = random_color(10, 200, random.randint(220, 255))
-        im = self.create_captcha_image(chars, color, background)
+        im = self.create_captcha_image(chars, color, background, rotate)
         self.create_noise_dots(im, color)
         self.create_noise_curve(im, color)
-        im = im.filter(ImageFilter.SMOOTH)
+        filter = ImageFilter.SMOOTH
+        if filters:
+            filter = random.choice(filters)
+
+        im = im.filter(filter)
         return im
 
 
