@@ -160,7 +160,7 @@ class ImageCaptcha(_Captcha):
             number -= 1
         return image
 
-    def create_captcha_image(self, chars: str, color: tuple, background: tuple, rotate: bool = True):
+    def create_captcha_image(self, chars, color, background, rotate = True):
         """Create the CAPTCHA image itself.
 
         :param chars: text to be generated.
@@ -173,7 +173,7 @@ class ImageCaptcha(_Captcha):
         image = Image.new('RGB', (self._width, self._height), background)
         draw = Draw(image)
 
-        def _draw_character(c: str, rotate: bool = True):
+        def _draw_character(c, rotate = True):
             font = random.choice(self.truefonts)
             try:
                 _, _, w, h = draw.textbbox((1, 1), c, font=font)
@@ -240,7 +240,7 @@ class ImageCaptcha(_Captcha):
 
         return image
 
-    def generate_image(self, chars: str, rotate: bool = True, filters: list = None):
+    def generate_image(self, chars, rotate = True, filters = None):
         """Generate the image of the given characters.
 
         :param chars: text to be generated.
