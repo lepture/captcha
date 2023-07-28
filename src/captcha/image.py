@@ -10,7 +10,7 @@ import os
 import random
 import typing as t
 from PIL.Image import new as createImage, Image, QUAD, BILINEAR
-from PIL.ImageDraw import Draw
+from PIL.ImageDraw import Draw, ImageDraw
 from PIL.ImageFilter import SMOOTH
 from PIL.ImageFont import FreeTypeFont, truetype
 from io import BytesIO
@@ -22,11 +22,6 @@ ColorTuple = t.Union[t.Tuple[int, int, int], t.Tuple[int, int, int, int]]
 
 DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
 DEFAULT_FONTS = [os.path.join(DATA_DIR, 'DroidSansMono.ttf')]
-
-
-table: t.List[int] = []
-for i in range(256):
-    table.append(int(i * 1.97))
 
 
 class ImageCaptcha:
@@ -49,6 +44,8 @@ class ImageCaptcha:
     :param fonts: Fonts to be used to generate CAPTCHA images.
     :param font_sizes: Random choose a font size from this parameters.
     """
+    lookup_table: t.List[int] = [int(i * 1.97) for i in range(256)]
+
     def __init__(
             self,
             width: int = 160,
@@ -73,7 +70,7 @@ class ImageCaptcha:
         return self._truefonts
 
     @staticmethod
-    def create_noise_curve(image: Image, color: ColorTuple):
+    def create_noise_curve(image: Image, color: ColorTuple) -> Image:
         w, h = image.size
         x1 = random.randint(0, int(w / 5))
         x2 = random.randint(w - int(w / 5), w)
@@ -100,6 +97,38 @@ class ImageCaptcha:
             number -= 1
         return image
 
+    def _draw_character(self, c: str, draw: ImageDraw, color: ColorTuple) -> Image:
+        font = random.choice(self.truefonts)
+        _, _, w, h = draw.textbbox((1, 1), c, font=font)
+
+        dx1 = random.randint(0, 4)
+        dy1 = random.randint(0, 6)
+        im = createImage('RGBA', (w + dx1, h + dy1))
+        Draw(im).text((dx1, dy1), c, font=font, fill=color)
+
+        # rotate
+        im = im.crop(im.getbbox())
+        im = im.rotate(random.uniform(-30, 30), BILINEAR, expand=True)
+
+        # warp
+        dx2 = w * random.uniform(0.1, 0.3)
+        dy2 = h * random.uniform(0.2, 0.3)
+        x1 = int(random.uniform(-dx2, dx2))
+        y1 = int(random.uniform(-dy2, dy2))
+        x2 = int(random.uniform(-dx2, dx2))
+        y2 = int(random.uniform(-dy2, dy2))
+        w2 = w + abs(x1) + abs(x2)
+        h2 = h + abs(y1) + abs(y2)
+        data = (
+            x1, y1,
+            -x1, h2 - y2,
+            w2 + x2, h2 + y2,
+            w2 - x2, -y1,
+        )
+        im = im.resize((w2, h2))
+        im = im.transform((w, h), QUAD, data)
+        return im
+
     def create_captcha_image(
             self,
             chars: str,
@@ -116,43 +145,11 @@ class ImageCaptcha:
         image = createImage('RGB', (self._width, self._height), background)
         draw = Draw(image)
 
-        def _draw_character(c: str):
-            font = random.choice(self.truefonts)
-            _, _, w, h = draw.textbbox((1, 1), c, font=font)
-
-            dx1 = random.randint(0, 4)
-            dy1 = random.randint(0, 6)
-            im = createImage('RGBA', (w + dx1, h + dy1))
-            Draw(im).text((dx1, dy1), c, font=font, fill=color)
-
-            # rotate
-            im = im.crop(im.getbbox())
-            im = im.rotate(random.uniform(-30, 30), BILINEAR, expand=True)
-
-            # warp
-            dx2 = w * random.uniform(0.1, 0.3)
-            dy2 = h * random.uniform(0.2, 0.3)
-            x1 = int(random.uniform(-dx2, dx2))
-            y1 = int(random.uniform(-dy2, dy2))
-            x2 = int(random.uniform(-dx2, dx2))
-            y2 = int(random.uniform(-dy2, dy2))
-            w2 = w + abs(x1) + abs(x2)
-            h2 = h + abs(y1) + abs(y2)
-            data = (
-                x1, y1,
-                -x1, h2 - y2,
-                w2 + x2, h2 + y2,
-                w2 - x2, -y1,
-            )
-            im = im.resize((w2, h2))
-            im = im.transform((w, h), QUAD, data)
-            return im
-
         images: t.List[Image] = []
         for c in chars:
             if random.random() > 0.5:
-                images.append(_draw_character(" "))
-            images.append(_draw_character(c))
+                images.append(self._draw_character(" ", draw, color))
+            images.append(self._draw_character(c, draw, color))
 
         text_width = sum([im.size[0] for im in images])
 
@@ -165,7 +162,7 @@ class ImageCaptcha:
 
         for im in images:
             w, h = im.size
-            mask = im.convert('L').point(table)
+            mask = im.convert('L').point(self.lookup_table)
             image.paste(im, (offset, int((self._height - h) / 2)), mask)
             offset = offset + w + random.randint(-rand, 0)
 

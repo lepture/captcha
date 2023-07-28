@@ -188,12 +188,12 @@ class AudioCaptcha:
         """
         return random.sample(self.choices, length)
 
-    def load(self):
+    def load(self) -> None:
         """Load voice data into memory."""
         for name in self.choices:
             self._load_data(name)
 
-    def _load_data(self, name: str):
+    def _load_data(self, name: str) -> None:
         dirname = os.path.join(self._voicedir, name)
         data: t.List[bytearray] = []
         for f in os.listdir(dirname):
@@ -227,7 +227,7 @@ class AudioCaptcha:
         voice = change_sound(voice, level)
         return voice
 
-    def create_background_noise(self, length: int, chars: str):
+    def create_background_noise(self, length: int, chars: str) -> bytearray:
         noise = create_noise(length, 4)
         pos = 0
         while pos < length:
@@ -268,7 +268,7 @@ class AudioCaptcha:
         body = self.create_wave_body(chars)
         return patch_wave_header(body)
 
-    def write(self, chars: str, output: str):
+    def write(self, chars: str, output: str) -> None:
         """Generate and write audio CAPTCHA data to the output.
 
         :param chars: text to be generated.
@@ -276,4 +276,4 @@ class AudioCaptcha:
         """
         data = self.generate(chars)
         with open(output, 'wb') as f:
-            return f.write(data)
+            f.write(data)
