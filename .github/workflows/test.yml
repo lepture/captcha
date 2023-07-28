@@ -5,7 +5,6 @@ on:
     branches-ignore:
       - 'wip-*'
     paths-ignore:
-      - '.github/**'
       - 'docs/**'
       - '*.md'
       - '*.rst'
@@ -13,7 +12,6 @@ on:
     branches-ignore:
       - 'wip-*'
     paths-ignore:
-      - '.github/**'
       - 'docs/**'
       - '*.md'
       - '*.rst'
@@ -59,3 +57,8 @@ jobs:
 
       - name: Report coverage
         run: pytest --cov=captcha --cov-report=xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
