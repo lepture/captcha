@@ -1,0 +1,61 @@
+name: Test
+
+on:
+  push:
+    branches-ignore:
+      - 'wip-*'
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - '*.md'
+      - '*.rst'
+  pull_request:
+    branches-ignore:
+      - 'wip-*'
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - '*.md'
+      - '*.rst'
+
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: flake8 lint
+        run: flake8 src/captcha
+
+      - name: mypy lint
+        run: mypy
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Report coverage
+        run: pytest --cov=captcha --cov-report=xml

@@ -213,7 +213,7 @@ class ImageCaptcha:
 def random_color(
         start: int,
         end: int,
-        opacity: t.Optional[int]=None) -> ColorTuple:
+        opacity: t.Optional[int] = None) -> ColorTuple:
     red = random.randint(start, end)
     green = random.randint(start, end)
     blue = random.randint(start, end)

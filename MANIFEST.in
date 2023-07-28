@@ -2,3 +2,6 @@ include LICENSE
 include README.rst
 recursive-include src/captcha/data *.wav
 recursive-include src/captcha/data *.ttf
+
+graft docs
+prune docs/_build

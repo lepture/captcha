@@ -18,3 +18,5 @@ cover/
 *.so
 venv/
 .venv/
+.coverage
+coverage.xml
