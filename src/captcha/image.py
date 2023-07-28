@@ -8,94 +8,28 @@
 
 import os
 import random
-from PIL import Image
-from PIL import ImageFilter
+import typing as t
+from PIL.Image import new as createImage, Image, QUAD, BILINEAR
 from PIL.ImageDraw import Draw
-from PIL.ImageFont import truetype
-try:
-    from cStringIO import StringIO as BytesIO
-except ImportError:
-    from io import BytesIO
-try:
-    from wheezy.captcha import image as wheezy_captcha
-except ImportError:
-    wheezy_captcha = None
+from PIL.ImageFilter import SMOOTH
+from PIL.ImageFont import FreeTypeFont, truetype
+from io import BytesIO
+
+__all__ = ['ImageCaptcha']
+
+
+ColorTuple = t.Union[t.Tuple[int, int, int], t.Tuple[int, int, int, int]]
 
 DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
 DEFAULT_FONTS = [os.path.join(DATA_DIR, 'DroidSansMono.ttf')]
 
-if wheezy_captcha:
-    __all__ = ['ImageCaptcha', 'WheezyCaptcha']
-else:
-    __all__ = ['ImageCaptcha']
 
-try:
-    _QUAD = Image.Transform.QUAD
-except AttributeError:
-    _QUAD = Image.QUAD
-
-try:
-    _BILINEAR = Image.Resampling.BILINEAR
-except AttributeError:
-    _BILINEAR = Image.BILINEAR
-
-table  =  []
-for  i  in  range( 256 ):
-    table.append( int(i * 1.97) )
+table: t.List[int] = []
+for i in range(256):
+    table.append(int(i * 1.97))
 
 
-class _Captcha(object):
-    def generate(self, chars, format='png'):
-        """Generate an Image Captcha of the given characters.
-
-        :param chars: text to be generated.
-        :param format: image file format
-        """
-        im = self.generate_image(chars)
-        out = BytesIO()
-        im.save(out, format=format)
-        out.seek(0)
-        return out
-
-    def write(self, chars, output, format='png'):
-        """Generate and write an image CAPTCHA data to the output.
-
-        :param chars: text to be generated.
-        :param output: output destination.
-        :param format: image file format
-        """
-        im = self.generate_image(chars)
-        return im.save(output, format=format)
-
-
-class WheezyCaptcha(_Captcha):
-    """Create an image CAPTCHA with wheezy.captcha."""
-    def __init__(self, width=200, height=75, fonts=None):
-        self._width = width
-        self._height = height
-        self._fonts = fonts or DEFAULT_FONTS
-
-    def generate_image(self, chars):
-        text_drawings = [
-            wheezy_captcha.warp(),
-            wheezy_captcha.rotate(),
-            wheezy_captcha.offset(),
-        ]
-        fn = wheezy_captcha.captcha(
-            drawings=[
-                wheezy_captcha.background(),
-                wheezy_captcha.text(fonts=self._fonts, drawings=text_drawings),
-                wheezy_captcha.curve(),
-                wheezy_captcha.noise(),
-                wheezy_captcha.smooth(),
-            ],
-            width=self._width,
-            height=self._height,
-        )
-        return fn(chars)
-
-
-class ImageCaptcha(_Captcha):
+class ImageCaptcha:
     """Create an image CAPTCHA.
 
     Many of the codes are borrowed from wheezy.captcha, with a modification
@@ -115,26 +49,31 @@ class ImageCaptcha(_Captcha):
     :param fonts: Fonts to be used to generate CAPTCHA images.
     :param font_sizes: Random choose a font size from this parameters.
     """
-    def __init__(self, width=160, height=60, fonts=None, font_sizes=None):
+    def __init__(
+            self,
+            width: int = 160,
+            height: int = 60,
+            fonts: t.Optional[t.List[str]] = None,
+            font_sizes: t.Optional[t.Tuple[int]] = None):
         self._width = width
         self._height = height
         self._fonts = fonts or DEFAULT_FONTS
         self._font_sizes = font_sizes or (42, 50, 56)
-        self._truefonts = []
+        self._truefonts: t.List[FreeTypeFont] = []
 
     @property
-    def truefonts(self):
+    def truefonts(self) -> t.List[FreeTypeFont]:
         if self._truefonts:
             return self._truefonts
-        self._truefonts = tuple([
+        self._truefonts = [
             truetype(n, s)
             for n in self._fonts
             for s in self._font_sizes
-        ])
+        ]
         return self._truefonts
 
     @staticmethod
-    def create_noise_curve(image, color):
+    def create_noise_curve(image: Image, color: ColorTuple):
         w, h = image.size
         x1 = random.randint(0, int(w / 5))
         x2 = random.randint(w - int(w / 5), w)
@@ -147,7 +86,11 @@ class ImageCaptcha(_Captcha):
         return image
 
     @staticmethod
-    def create_noise_dots(image, color, width=3, number=30):
+    def create_noise_dots(
+            image: Image,
+            color: ColorTuple,
+            width: int = 3,
+            number: int = 30) -> Image:
         draw = Draw(image)
         w, h = image.size
         while number:
@@ -157,7 +100,11 @@ class ImageCaptcha(_Captcha):
             number -= 1
         return image
 
-    def create_captcha_image(self, chars, color, background):
+    def create_captcha_image(
+            self,
+            chars: str,
+            color: ColorTuple,
+            background: ColorTuple) -> Image:
         """Create the CAPTCHA image itself.
 
         :param chars: text to be generated.
@@ -166,32 +113,29 @@ class ImageCaptcha(_Captcha):
 
         The color should be a tuple of 3 numbers, such as (0, 255, 255).
         """
-        image = Image.new('RGB', (self._width, self._height), background)
+        image = createImage('RGB', (self._width, self._height), background)
         draw = Draw(image)
 
-        def _draw_character(c):
+        def _draw_character(c: str):
             font = random.choice(self.truefonts)
-            try:
-                _, _, w, h = draw.textbbox((1, 1), c, font=font)
-            except AttributeError:
-                w, h = draw.textsize(c, font=font)
+            _, _, w, h = draw.textbbox((1, 1), c, font=font)
 
-            dx = random.randint(0, 4)
-            dy = random.randint(0, 6)
-            im = Image.new('RGBA', (w + dx, h + dy))
-            Draw(im).text((dx, dy), c, font=font, fill=color)
+            dx1 = random.randint(0, 4)
+            dy1 = random.randint(0, 6)
+            im = createImage('RGBA', (w + dx1, h + dy1))
+            Draw(im).text((dx1, dy1), c, font=font, fill=color)
 
             # rotate
             im = im.crop(im.getbbox())
-            im = im.rotate(random.uniform(-30, 30), _BILINEAR, expand=1)
+            im = im.rotate(random.uniform(-30, 30), BILINEAR, expand=True)
 
             # warp
-            dx = w * random.uniform(0.1, 0.3)
-            dy = h * random.uniform(0.2, 0.3)
-            x1 = int(random.uniform(-dx, dx))
-            y1 = int(random.uniform(-dy, dy))
-            x2 = int(random.uniform(-dx, dx))
-            y2 = int(random.uniform(-dy, dy))
+            dx2 = w * random.uniform(0.1, 0.3)
+            dy2 = h * random.uniform(0.2, 0.3)
+            x1 = int(random.uniform(-dx2, dx2))
+            y1 = int(random.uniform(-dy2, dy2))
+            x2 = int(random.uniform(-dx2, dx2))
+            y2 = int(random.uniform(-dy2, dy2))
             w2 = w + abs(x1) + abs(x2)
             h2 = h + abs(y1) + abs(y2)
             data = (
@@ -201,10 +145,10 @@ class ImageCaptcha(_Captcha):
                 w2 - x2, -y1,
             )
             im = im.resize((w2, h2))
-            im = im.transform((w, h), _QUAD, data)
+            im = im.transform((w, h), QUAD, data)
             return im
 
-        images = []
+        images: t.List[Image] = []
         for c in chars:
             if random.random() > 0.5:
                 images.append(_draw_character(" "))
@@ -230,7 +174,7 @@ class ImageCaptcha(_Captcha):
 
         return image
 
-    def generate_image(self, chars):
+    def generate_image(self, chars: str) -> Image:
         """Generate the image of the given characters.
 
         :param chars: text to be generated.
@@ -240,11 +184,36 @@ class ImageCaptcha(_Captcha):
         im = self.create_captcha_image(chars, color, background)
         self.create_noise_dots(im, color)
         self.create_noise_curve(im, color)
-        im = im.filter(ImageFilter.SMOOTH)
+        im = im.filter(SMOOTH)
         return im
 
+    def generate(self, chars: str, format: str = 'png') -> BytesIO:
+        """Generate an Image Captcha of the given characters.
 
-def random_color(start, end, opacity=None):
+        :param chars: text to be generated.
+        :param format: image file format
+        """
+        im = self.generate_image(chars)
+        out = BytesIO()
+        im.save(out, format=format)
+        out.seek(0)
+        return out
+
+    def write(self, chars: str, output: str, format: str = 'png') -> None:
+        """Generate and write an image CAPTCHA data to the output.
+
+        :param chars: text to be generated.
+        :param output: output destination.
+        :param format: image file format
+        """
+        im = self.generate_image(chars)
+        im.save(output, format=format)
+
+
+def random_color(
+        start: int,
+        end: int,
+        opacity: t.Optional[int]=None) -> ColorTuple:
     red = random.randint(start, end)
     green = random.randint(start, end)
     blue = random.randint(start, end)

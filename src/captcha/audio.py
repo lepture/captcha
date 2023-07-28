@@ -8,17 +8,14 @@
     This module is totally inspired by https://github.com/dchest/captcha
 """
 
+import typing as t
 import os
 import copy
 import wave
 import struct
 import random
 import operator
-
-import sys
-if sys.version_info[0] != 2:
-    import functools
-    reduce = functools.reduce
+from functools import reduce
 
 
 __all__ = ['AudioCaptcha']
@@ -32,14 +29,14 @@ WAVE_HEADER_LENGTH = len(WAVE_HEADER) - 4
 DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
 
 
-def _read_wave_file(filepath):
+def _read_wave_file(filepath: str) -> bytearray:
     w = wave.open(filepath)
     data = w.readframes(-1)
     w.close()
     return bytearray(data)
 
 
-def change_speed(body, speed=1):
+def change_speed(body: bytearray, speed: float = 1) -> bytearray:
     """Change the voice speed of the wave body."""
     if speed == 1:
         return body
@@ -47,7 +44,7 @@ def change_speed(body, speed=1):
     length = int(len(body) * speed)
     rv = bytearray(length)
 
-    step = 0
+    step: float = 0
     for v in body:
         i = int(step)
         while i < int(step + speed) and i < length:
@@ -57,7 +54,7 @@ def change_speed(body, speed=1):
     return rv
 
 
-def patch_wave_header(body):
+def patch_wave_header(body: bytearray) -> bytearray:
     """Patch header to the given wave body.
 
     :param body: the wave content body, it should be bytearray.
@@ -81,7 +78,7 @@ def patch_wave_header(body):
     return data
 
 
-def create_noise(length, level=4):
+def create_noise(length: int, level: int = 4) -> bytearray:
     """Create white noise for background"""
     noise = bytearray(length)
     adjust = 128 - int(level / 2)
@@ -93,7 +90,7 @@ def create_noise(length, level=4):
     return noise
 
 
-def create_silence(length):
+def create_silence(length: int) -> bytearray:
     """Create a piece of silence."""
     data = bytearray(length)
     i = 0
@@ -103,25 +100,25 @@ def create_silence(length):
     return data
 
 
-def change_sound(body, level=1):
+def change_sound(body: bytearray, level: float = 1) -> bytearray:
     if level == 1:
         return body
 
     body = copy.copy(body)
     for i, v in enumerate(body):
         if v > 128:
-            v = (v - 128) * level + 128
-            v = max(int(v), 128)
+            v = int((v - 128) * level + 128)
+            v = max(v, 128)
             v = min(v, 255)
         elif v < 128:
-            v = 128 - (128 - v) * level
-            v = min(int(v), 128)
+            v = int(128 - (128 - v) * level)
+            v = min(v, 128)
             v = max(v, 0)
         body[i] = v
     return body
 
 
-def mix_wave(src, dst):
+def mix_wave(src: bytearray, dst: bytearray) -> bytearray:
     """Mix two wave body into one."""
     if len(src) > len(dst):
         # output should be longer
@@ -141,7 +138,7 @@ END_BEEP = change_speed(BEEP, 1.4)
 SILENCE = create_silence(int(WAVE_SAMPLE_RATE / 5))
 
 
-class AudioCaptcha(object):
+class AudioCaptcha:
     """Create an audio CAPTCHA.
 
     Create an instance of AudioCaptcha is pretty simple::
@@ -166,16 +163,16 @@ class AudioCaptcha(object):
 
         captcha = AudioCaptcha(voicedir='/path/to/voices')
     """
-    def __init__(self, voicedir=None):
+    def __init__(self, voicedir: t.Optional[str] = None):
         if voicedir is None:
             voicedir = DATA_DIR
 
         self._voicedir = voicedir
-        self._cache = {}
-        self._choices = []
+        self._cache: t.Dict[str, t.List[bytearray]] = {}
+        self._choices: t.List[str] = []
 
     @property
-    def choices(self):
+    def choices(self) -> t.List[str]:
         """Available choices for characters to be generated."""
         if self._choices:
             return self._choices
@@ -184,7 +181,7 @@ class AudioCaptcha(object):
                 self._choices.append(n)
         return self._choices
 
-    def random(self, length=6):
+    def random(self, length: int = 6) -> t.List[str]:
         """Generate a random string with the given length.
 
         :param length: the return string length.
@@ -196,16 +193,16 @@ class AudioCaptcha(object):
         for name in self.choices:
             self._load_data(name)
 
-    def _load_data(self, name):
+    def _load_data(self, name: str):
         dirname = os.path.join(self._voicedir, name)
-        data = []
+        data: t.List[bytearray] = []
         for f in os.listdir(dirname):
             filepath = os.path.join(dirname, f)
             if f.endswith('.wav') and os.path.isfile(filepath):
                 data.append(_read_wave_file(filepath))
         self._cache[name] = data
 
-    def _twist_pick(self, key):
+    def _twist_pick(self, key: str) -> bytearray:
         voice = random.choice(self._cache[key])
 
         # random change speed
@@ -217,7 +214,7 @@ class AudioCaptcha(object):
         voice = change_sound(voice, level)
         return voice
 
-    def _noise_pick(self):
+    def _noise_pick(self) -> bytearray:
         key = random.choice(self.choices)
         voice = random.choice(self._cache[key])
         voice = copy.copy(voice)
@@ -230,7 +227,7 @@ class AudioCaptcha(object):
         voice = change_sound(voice, level)
         return voice
 
-    def create_background_noise(self, length, chars):
+    def create_background_noise(self, length: int, chars: str):
         noise = create_noise(length, 4)
         pos = 0
         while pos < length:
@@ -240,20 +237,20 @@ class AudioCaptcha(object):
             pos = end + random.randint(0, int(WAVE_SAMPLE_RATE / 10))
         return noise
 
-    def create_wave_body(self, chars):
-        voices = []
-        inters = []
-        for key in chars:
-            voices.append(self._twist_pick(key))
-            v = random.randint(WAVE_SAMPLE_RATE, WAVE_SAMPLE_RATE * 3)
-            inters.append(v)
+    def create_wave_body(self, chars: str) -> bytearray:
+        voices: t.List[bytearray] = []
+        inters: t.List[int] = []
+        for c in chars:
+            voices.append(self._twist_pick(c))
+            i = random.randint(WAVE_SAMPLE_RATE, WAVE_SAMPLE_RATE * 3)
+            inters.append(i)
 
         durations = map(lambda a: len(a), voices)
         length = max(durations) * len(chars) + reduce(operator.add, inters)
         bg = self.create_background_noise(length, chars)
 
         # begin
-        pos = inters[0]
+        pos: int = inters[0]
         for i, v in enumerate(voices):
             end = pos + len(v) + 1
             bg[pos:end] = mix_wave(v, bg[pos:end])
@@ -261,7 +258,7 @@ class AudioCaptcha(object):
 
         return BEEP + SILENCE + BEEP + SILENCE + BEEP + bg + END_BEEP
 
-    def generate(self, chars):
+    def generate(self, chars: str) -> bytearray:
         """Generate audio CAPTCHA data. The return data is a bytearray.
 
         :param chars: text to be generated.
@@ -271,7 +268,7 @@ class AudioCaptcha(object):
         body = self.create_wave_body(chars)
         return patch_wave_header(body)
 
-    def write(self, chars, output):
+    def write(self, chars: str, output: str):
         """Generate and write audio CAPTCHA data to the output.
 
         :param chars: text to be generated.
