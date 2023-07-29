@@ -6,7 +6,7 @@
 
     A captcha library that generates audio and image CAPTCHAs.
 
-    :copyright: (c) 2015 - 2018 by Hsiaoming Yang.
+    :copyright: (c) 2014 by Hsiaoming Yang.
     :license: BSD, see LICENSE for more details.
 """
 

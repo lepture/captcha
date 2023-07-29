@@ -8,6 +8,15 @@ Changelog
 ----
 
 
+v0.5.0
+------
+
+Released on Jul 29, 2023
+
+- Fix for ``Pillow >= 10``, via :issue:`63`
+- Drop support for Python bellow 3.8
+- Add type hints
+
 v0.4
 ----
 
