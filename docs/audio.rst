@@ -22,14 +22,14 @@ Generating audio CAPTCHA with the :class:`AudioCaptcha`` class is remarkably sim
     captcha = AudioCaptcha()
     data: bytearray = captcha.generate('1234')
 
-.. note::
-
-    The default voice library only includes numbers from 0 to 9.
-
 Voice library
 -------------
 
-We can build our customized voice library with the help of ``espeak`` and ``ffmpeg``:
+The ``AudioCaptcha`` module comes with built-in voice files for
+numbers from 0 to 9. However, for enhanced security and customization,
+it is highly recommended to use your own voice library. This section
+will guide you on how to generate your own voice library using ``espeak``
+and ``ffmpeg``.
 
 .. code-block:: bash
 
@@ -47,5 +47,38 @@ We can build our customized voice library with the help of ``espeak`` and ``ffmp
       rm "$ESLANG/$i/orig_default.wav"
   done
 
+Then use the voice library:
+
+.. code-block:: python
+
+    from captcha.audio import AudioCaptcha
+
+    voice_dir = "path/to/en"  # we generated the wav files in "en" folder
+    captcha = AudioCaptcha(voice_dir)
+
 Web server
 ----------
+
+In addition to generating and saving the voice files in a directory or
+cloud storage like Amazon S3, you can also serve the Voice CAPTCHA audio
+files on-the-fly.
+
+Let's explore how to use the CAPTCHA library to dynamically serve audio
+CAPTCHAs within a Flask application.
+
+.. code-block:: python
+
+    from io import BytesIO
+    from flask import Flask, Response
+    from captcha.audio import AudioCaptcha
+
+    audio = AudioCaptcha()
+    app = Flask(__name__)
+
+
+    @app.route("/captcha")
+    def captcha_view():
+        # add your own logic to generate the code
+        code = "1234"
+        data = audio.generate(code)
+        return Response(BytesIO(data), mimetype="audio/wav")

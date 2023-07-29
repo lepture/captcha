@@ -7,6 +7,8 @@ Image Captcha
 
 ----
 
+This module is compatibile with Pillow 9.4.0+.
+
 .. module:: captcha.image
     :noindex:
 
@@ -33,7 +35,34 @@ The result image would be something like:
 Fonts
 -----
 
-You should use
+The ``ImageCaptcha`` library comes with one built-in font named "DroidSansMono",
+which is licensed under the Apache License 2.0. However, it is recommended to use
+your own custom fonts for generating CAPTCHA images.
 
-Web server
+.. code-block:: python
+
+    custom_fonts = ['path/to/your/custom_font.ttf']
+    captcha = ImageCaptcha(fonts=[custom_fonts])
+
+On the fly
 ----------
+
+Let's explore how to use the CAPTCHA library to dynamically render image
+CAPTCHAs within a Flask application. This allows you to generate CAPTCHA
+images dynamically and serve them directly to users when they access a
+specific endpoint.
+
+.. code-block:: python
+
+    from flask import Flask, Response
+    from captcha.image import ImageCaptcha
+
+    image = ImageCaptcha()
+    app = Flask(__name__)
+
+    @app.route("/captcha")
+    def captcha_view():
+        # add your own logic to generate the code
+        code = "ABCD"
+        data = image.generate(code)
+        return Response(data, mimetype="image/png")
