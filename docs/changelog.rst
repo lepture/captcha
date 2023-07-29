@@ -1,50 +1,53 @@
-Changlog
-========
+Changelog
+=========
 
-The changelog of Captcha.
+.. rst-class:: lead
 
-Version 0.4
------------
+    Here lists the release notes of python captcha library.
+
+----
+
+
+v0.4
+----
 
 Released on Mar 15, 2022
 
 - Fix "'float' object cannot be interpreted as an integer" in Python 3.10.0
 
 
-Version 0.3
------------
+v0.3
+----
 
 Released on Nov 6, 2018
 
 - Support Python 3.5, 3.6, 3.7
 
-Version 0.2.4
--------------
+v0.2.4
+------
 
 Released on Jul 14, 2017
 
-- Fix compatibility with PIL
+- Fix compatibility with PIL, via :pull:`18`
 
-https://github.com/lepture/captcha/pull/18
-
-Version 0.2.3
--------------
+v0.2.3
+------
 
 Released on Jun 21, 2017
 
 - Fix image width bug
 - Fix non-integer error
 
-Version 0.2.2
--------------
+v0.2.2
+------
 
 Released on Mar 17, 2017
 
 - Fix memory leak
 
 
-Version 0.2.1
--------------
+v0.2.1
+------
 
 Released on Oct 4, 2015.
 
@@ -52,16 +55,16 @@ Released on Oct 4, 2015.
 - Improve ImageCaptcha
 
 
-Version 0.2
------------
+v0.2
+----
 
 Released on Aug 12, 2015.
 
 - File format of Image CAPTCHA can be specified
 
 
-Version 0.1.1
--------------
+v0.1.1
+------
 
 Released on Dec 2, 2014, this is a bugfix release.
 
@@ -70,7 +73,7 @@ Released on Dec 2, 2014, this is a bugfix release.
 - Add font_sizes parameters for ImageCaptcha when width is too small
 
 
-Version 0.1
------------
+v0.1
+----
 
 Released on Nov 27, 2014, the very first release.

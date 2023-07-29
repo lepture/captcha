@@ -22,7 +22,7 @@ Usage
 
 Audio and Image CAPTCHAs are in separated modules:
 
-.. code:: python
+.. code-block:: python
 
     from captcha.audio import AudioCaptcha
     from captcha.image import ImageCaptcha
@@ -50,4 +50,3 @@ License
 -------
 
 Licensed under BSD. Please see LICENSE for licensing details.
-
