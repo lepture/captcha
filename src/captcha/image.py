@@ -97,7 +97,11 @@ class ImageCaptcha:
             number -= 1
         return image
 
-    def _draw_character(self, c: str, draw: ImageDraw, color: ColorTuple) -> Image:
+    def _draw_character(
+            self,
+            c: str,
+            draw: ImageDraw,
+            color: ColorTuple) -> Image:
         font = random.choice(self.truefonts)
         _, _, w, h = draw.textbbox((1, 1), c, font=font)
 
