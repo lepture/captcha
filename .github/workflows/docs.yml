@@ -23,6 +23,7 @@ jobs:
     name: build docs
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
       with:
         python-version: 3.9
