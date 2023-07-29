@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - 'wip-*'
     paths-ignore:
+      - '.github/**'
       - 'docs/**'
       - '*.md'
       - '*.rst'
