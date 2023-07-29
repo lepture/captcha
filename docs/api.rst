@@ -1,3 +1,5 @@
+:description: The API References for audio and image CAPTCHAs.
+
 API References
 ==============
 

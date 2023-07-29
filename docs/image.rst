@@ -1,3 +1,5 @@
+:description: Learn how to generate image CAPTCHA in Python.
+
 Image Captcha
 =============
 

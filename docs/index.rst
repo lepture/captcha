@@ -1,3 +1,5 @@
+:description: A Python captcha library that generates audio and image CAPTCHAs.
+
 Captcha
 ========
 

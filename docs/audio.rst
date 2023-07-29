@@ -1,3 +1,5 @@
+:description: Learn how to generate audio CAPTCHA in Python.
+
 Audio Captcha
 =============
 
