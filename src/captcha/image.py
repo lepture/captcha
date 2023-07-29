@@ -103,10 +103,7 @@ class ImageCaptcha:
             draw: ImageDraw,
             color: ColorTuple) -> Image:
         font = random.choice(self.truefonts)
-
-        left, top, right, bottom = draw.textbbox((0, 0), c, font=font)
-        w = int((right - left)*1.7) or 1
-        h = int((bottom - top)*1.7) or 1
+        _, _, w, h = draw.multiline_textbbox((1, 1), c, font=font)
 
         dx1 = random.randint(0, 4)
         dy1 = random.randint(0, 6)
