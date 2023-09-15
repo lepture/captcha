@@ -51,7 +51,7 @@ class ImageCaptcha:
             width: int = 160,
             height: int = 60,
             fonts: t.Optional[t.List[str]] = None,
-            font_sizes: t.Optional[t.Tuple[int]] = None):
+            font_sizes: t.Optional[t.Tuple[int, ...]] = None):
         self._width = width
         self._height = height
         self._fonts = fonts or DEFAULT_FONTS
