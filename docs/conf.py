@@ -20,6 +20,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.extlinks",
+    "sphinx_sitemap",
 ]
 
 extlinks = {
@@ -30,6 +31,9 @@ extlinks = {
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
 }
+
+html_baseurl = "https://captcha.lepture.com/"
+sitemap_url_scheme = "{link}"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -49,7 +53,7 @@ html_static_path = ["_static"]
 #
 html_theme = 'shibuya'
 html_theme_options = {
-    "dark_code": True,
+    "accent_color": "green",
     "light_logo": "_static/light-logo.svg",
     "dark_logo": "_static/dark-logo.svg",
     "twitter_site": 'lepture',
