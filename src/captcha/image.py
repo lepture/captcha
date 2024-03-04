@@ -57,6 +57,14 @@ class ImageCaptcha:
         self._fonts = fonts or DEFAULT_FONTS
         self._font_sizes = font_sizes or (42, 50, 56)
         self._truefonts: t.List[FreeTypeFont] = []
+        # Can be accessed drectly
+        self.character_offset_dx = (0, 4)
+        self.character_offset_dy = (0, 6)
+        self.chracter_rotate = (-30, 30)
+        self.character_warp_dx = (0.1, 0.3)
+        self.character_warp_dy = (0.2, 0.3)
+        self.word_space_probability = 0.5
+        self.word_offset_dx = 0.25
 
     @property
     def truefonts(self) -> t.List[FreeTypeFont]:
@@ -105,18 +113,18 @@ class ImageCaptcha:
         font = random.choice(self.truefonts)
         _, _, w, h = draw.multiline_textbbox((1, 1), c, font=font)
 
-        dx1 = random.randint(0, 4)
-        dy1 = random.randint(0, 6)
+        dx1 = random.randint(*self.character_offset_dx)
+        dy1 = random.randint(*self.character_offset_dy)
         im = createImage('RGBA', (w + dx1, h + dy1))
         Draw(im).text((dx1, dy1), c, font=font, fill=color)
 
         # rotate
         im = im.crop(im.getbbox())
-        im = im.rotate(random.uniform(-30, 30), BILINEAR, expand=True)
+        im = im.rotate(random.uniform(*self.chracter_rotate), BILINEAR, expand=True)
 
         # warp
-        dx2 = w * random.uniform(0.1, 0.3)
-        dy2 = h * random.uniform(0.2, 0.3)
+        dx2 = w * random.uniform(*self.character_warp_dx)
+        dy2 = h * random.uniform(*self.character_warp_dy)
         x1 = int(random.uniform(-dx2, dx2))
         y1 = int(random.uniform(-dy2, dy2))
         x2 = int(random.uniform(-dx2, dx2))
@@ -151,7 +159,7 @@ class ImageCaptcha:
 
         images: t.List[Image] = []
         for c in chars:
-            if random.random() > 0.5:
+            if random.random() > self.word_space_probability:
                 images.append(self._draw_character(" ", draw, color))
             images.append(self._draw_character(c, draw, color))
 
@@ -161,7 +169,7 @@ class ImageCaptcha:
         image = image.resize((width, self._height))
 
         average = int(text_width / len(chars))
-        rand = int(0.25 * average)
+        rand = int(self.word_offset_dx * average)
         offset = int(average * 0.1)
 
         for im in images:
@@ -219,5 +227,5 @@ def random_color(
     green = random.randint(start, end)
     blue = random.randint(start, end)
     if opacity is None:
-        return (red, green, blue)
-    return (red, green, blue, opacity)
+        return red, green, blue
+    return red, green, blue, opacity
