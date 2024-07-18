@@ -23,13 +23,13 @@ jobs:
     name: build docs
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: 3.9
 
     - name: Setup Pages
-      uses: actions/configure-pages@v3
+      uses: actions/configure-pages@v5
 
     - name: install package
       run: python -m pip install .
@@ -41,7 +41,7 @@ jobs:
       run: sphinx-build docs _site -b dirhtml
 
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v1
+      uses: actions/upload-pages-artifact@v3
 
   deploy:
     environment:
@@ -54,4 +54,4 @@ jobs:
     steps:
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v1
+      uses: actions/deploy-pages@v4
