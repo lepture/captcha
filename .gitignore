@@ -21,3 +21,4 @@ venv/
 demo.*
 .coverage
 coverage.xml
+tests/demo.*
