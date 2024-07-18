@@ -68,3 +68,30 @@ specific endpoint.
         code = "ABCD"
         data = image.generate(code)
         return Response(data, mimetype="image/png")
+
+Character Settings
+------------------
+
+.. versionadded:: 0.6
+
+Update the default settings to change the character renderring.
+
+.. code-block:: python
+
+    from captcha.image import ImageCaptcha
+
+    captcha = ImageCaptcha()
+    captcha.character_rotate = (-40, 40)
+    captcha.generate("ABCD")
+
+Available options:
+
+.. code-block:: python
+
+    character_offset_dx: tuple[int, int] = (0, 4)
+    character_offset_dy: tuple[int, int] = (0, 6)
+    character_rotate: tuple[int, int] = (-30, 30)
+    character_warp_dx: tuple[float, float] = (0.1, 0.3)
+    character_warp_dy: tuple[float, float] = (0.2, 0.3)
+    word_space_probability: float = 0.5
+    word_offset_dx: float = 0.25

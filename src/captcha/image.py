@@ -48,7 +48,7 @@ class ImageCaptcha:
     lookup_table: list[int] = [int(i * 1.97) for i in range(256)]
     character_offset_dx: tuple[int, int] = (0, 4)
     character_offset_dy: tuple[int, int] = (0, 6)
-    chracter_rotate: tuple[int, int] = (-30, 30)
+    character_rotate: tuple[int, int] = (-30, 30)
     character_warp_dx: tuple[float, float] = (0.1, 0.3)
     character_warp_dy: tuple[float, float] = (0.2, 0.3)
     word_space_probability: float = 0.5
@@ -121,7 +121,7 @@ class ImageCaptcha:
         # rotate
         im = im.crop(im.getbbox())
         im = im.rotate(
-            random.uniform(*self.chracter_rotate),
+            random.uniform(*self.character_rotate),
             BILINEAR,
             expand=True,
         )

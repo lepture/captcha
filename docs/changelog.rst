@@ -7,6 +7,12 @@ Changelog
 
 ----
 
+v0.6.0
+------
+
+Released on Jul 18, 2024
+
+- Add character settings for ``ImageCaptcha``.
 
 v0.5.0
 ------
