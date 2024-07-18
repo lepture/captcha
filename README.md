@@ -4,8 +4,7 @@ A captcha library that generates audio and image CAPTCHAs.
 
 
 [![GitHub Sponsor](https://badgen.net/badge/support/captcha/blue?icon=github)](https://github.com/sponsors/lepture)
-[![Build Status](https://github.com/lepture/captcha/actions/workflows/test.yml/badge.svg)](https://github.com/lepture/captcha/actions)
-[![PyPI](https://badgen.net/pypi/v/captcha)](https://pypi.org/project/captcha)
+[![Build Status](https://github.com/lepture/captcha/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/lepture/captcha/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/lepture/captcha/branch/master/graph/badge.svg?token=xLjcXGMaeo)](https://codecov.io/gh/lepture/captcha)
 
 ## Install
@@ -51,8 +50,6 @@ data. But it is suggested that you use your own voice and font data.
 
 Here are some demo results:
 
-1. Image:
+![Image Captcha](https://github.com/lepture/captcha/releases/download/v0.5.0/demo.png)
 
-  ![Image](https://cloud.githubusercontent.com/assets/290496/5213632/95e68768-764b-11e4-862f-d95a8f776cdd.png)
-
-2. Audio: [wav file](https://github.com/lepture/captcha/releases/download/v0.1-beta/out.wav)
+[Audio Captcha](https://github.com/lepture/captcha/releases/download/v0.5.0/demo.wav)
