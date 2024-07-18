@@ -63,12 +63,6 @@ html_theme_options = {
     "carbon_ads_code": "CE7DKK3W",
     "carbon_ads_placement": "captchalepturecom",
     "og_image_url": "https://captcha.lepture.com/_static/icon.png",
-    "light_css_variables": {
-        "--sy-rc-theme": "36, 206, 114",
-    },
-    "dark_css_variables": {
-        "--sy-rc-theme": "36, 179, 101",
-    },
     "nav_links": [
         {"title": "Sponsor me", "url": "https://github.com/sponsors/lepture"},
     ]

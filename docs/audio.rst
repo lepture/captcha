@@ -27,6 +27,7 @@ Generating audio CAPTCHA with the :class:`AudioCaptcha`` class is remarkably sim
 Here is an example of an audio captcha:
 
 .. raw:: html
+
     <audio controls="controls">
       <source src="https://github.com/lepture/captcha/releases/download/v0.5.0/demo.wav" type="audio/wav">
     </audio>
