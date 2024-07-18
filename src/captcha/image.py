@@ -6,6 +6,7 @@
     Generate Image CAPTCHAs, just the normal image CAPTCHAs you are using.
 """
 
+from __future__ import annotations
 import os
 import random
 import typing as t
@@ -44,30 +45,29 @@ class ImageCaptcha:
     :param fonts: Fonts to be used to generate CAPTCHA images.
     :param font_sizes: Random choose a font size from this parameters.
     """
-    lookup_table: t.List[int] = [int(i * 1.97) for i in range(256)]
+    lookup_table: list[int] = [int(i * 1.97) for i in range(256)]
+    character_offset_dx: tuple[int, int] = (0, 4)
+    character_offset_dy: tuple[int, int] = (0, 6)
+    chracter_rotate: tuple[int, int] = (-30, 30)
+    character_warp_dx: tuple[float, float] = (0.1, 0.3)
+    character_warp_dy: tuple[float, float] = (0.2, 0.3)
+    word_space_probability: float = 0.5
+    word_offset_dx: float = 0.25
 
     def __init__(
             self,
             width: int = 160,
             height: int = 60,
-            fonts: t.Optional[t.List[str]] = None,
-            font_sizes: t.Optional[t.Tuple[int, ...]] = None):
+            fonts: list[str] | None = None,
+            font_sizes: tuple[int, ...] | None = None):
         self._width = width
         self._height = height
         self._fonts = fonts or DEFAULT_FONTS
         self._font_sizes = font_sizes or (42, 50, 56)
-        self._truefonts: t.List[FreeTypeFont] = []
-        # Can be accessed drectly
-        self.character_offset_dx = (0, 4)
-        self.character_offset_dy = (0, 6)
-        self.chracter_rotate = (-30, 30)
-        self.character_warp_dx = (0.1, 0.3)
-        self.character_warp_dy = (0.2, 0.3)
-        self.word_space_probability = 0.5
-        self.word_offset_dx = 0.25
+        self._truefonts: list[FreeTypeFont] = []
 
     @property
-    def truefonts(self) -> t.List[FreeTypeFont]:
+    def truefonts(self) -> list[FreeTypeFont]:
         if self._truefonts:
             return self._truefonts
         self._truefonts = [
@@ -120,7 +120,11 @@ class ImageCaptcha:
 
         # rotate
         im = im.crop(im.getbbox())
-        im = im.rotate(random.uniform(*self.chracter_rotate), BILINEAR, expand=True)
+        im = im.rotate(
+            random.uniform(*self.chracter_rotate),
+            BILINEAR,
+            expand=True,
+        )
 
         # warp
         dx2 = w * random.uniform(*self.character_warp_dx)
@@ -157,7 +161,7 @@ class ImageCaptcha:
         image = createImage('RGB', (self._width, self._height), background)
         draw = Draw(image)
 
-        images: t.List[Image] = []
+        images: list[Image] = []
         for c in chars:
             if random.random() > self.word_space_probability:
                 images.append(self._draw_character(" ", draw, color))
@@ -222,7 +226,7 @@ class ImageCaptcha:
 def random_color(
         start: int,
         end: int,
-        opacity: t.Optional[int] = None) -> ColorTuple:
+        opacity: int | None = None) -> ColorTuple:
     red = random.randint(start, end)
     green = random.randint(start, end)
     blue = random.randint(start, end)
