@@ -41,6 +41,21 @@ image.write('1234', 'out.png')
 This is the APIs for your daily works. We do have built-in voice data and font
 data. But it is suggested that you use your own voice and font data.
 
+### Use Custom Colors
+
+In order to change colors you have to specify your desired color as a tuple of Red, Green and Blue value.
+Example:- `(255, 255, 0)` for yellow color, (255, 0, 0)` for red color.
+
+```python
+from captcha.image import ImageCaptcha
+
+image = ImageCaptcha(fonts=['/path/A.ttf', '/path/B.ttf'])
+
+data = image.generate('1234')
+image.write('1234', 'out.png', bg_color=(255, 255, 0), fg_color=(255, 0, 0)) # red text in yellow background
+```
+
+
 ## Useful Links
 
 1. GitHub: https://github.com/lepture/captcha
