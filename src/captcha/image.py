@@ -187,8 +187,8 @@ class ImageCaptcha:
 
         return image
 
-    def generate_image(self, chars: str, 
-                       bg_color: ColorTuple | None = None, 
+    def generate_image(self, chars: str,
+                       bg_color: ColorTuple | None = None,
                        fg_color: ColorTuple | None = None) -> Image:
         """Generate the image of the given characters.
 
@@ -196,8 +196,8 @@ class ImageCaptcha:
         :param bg_color: background color of the image in rgb format (r, g, b).
         :param fg_color: foreground color of the text in rgba format (r,g,b,a).
         """
-        background: ColorTuple = bg_color if bg_color else random_color(238, 255)
-        random_fg_color: ColorTuple = random_color(10, 200, random.randint(220, 255))
+        background = bg_color if bg_color else random_color(238, 255)
+        random_fg_color = random_color(10, 200, random.randint(220, 255))
         color: ColorTuple = fg_color if fg_color else random_fg_color
 
         im = self.create_captcha_image(chars, color, background)
@@ -206,8 +206,8 @@ class ImageCaptcha:
         im = im.filter(SMOOTH)
         return im
 
-    def generate(self, chars: str, format: str = 'png', 
-                 bg_color: ColorTuple | None = None, 
+    def generate(self, chars: str, format: str = 'png',
+                 bg_color: ColorTuple | None = None,
                  fg_color: ColorTuple | None = None) -> BytesIO:
         """Generate an Image Captcha of the given characters.
 
@@ -222,8 +222,8 @@ class ImageCaptcha:
         out.seek(0)
         return out
 
-    def write(self, chars: str, output: str, format: str = 'png', 
-              bg_color: ColorTuple | None = None, 
+    def write(self, chars: str, output: str, format: str = 'png',
+              bg_color: ColorTuple | None = None,
               fg_color: ColorTuple | None = None) -> None:
         """Generate and write an image CAPTCHA data to the output.
 
