@@ -187,39 +187,53 @@ class ImageCaptcha:
 
         return image
 
-    def generate_image(self, chars: str) -> Image:
+    def generate_image(self, chars: str,
+                       bg_color: ColorTuple | None = None,
+                       fg_color: ColorTuple | None = None) -> Image:
         """Generate the image of the given characters.
 
         :param chars: text to be generated.
+        :param bg_color: background color of the image in rgb format (r, g, b).
+        :param fg_color: foreground color of the text in rgba format (r,g,b,a).
         """
-        background = random_color(238, 255)
-        color = random_color(10, 200, random.randint(220, 255))
+        background = bg_color if bg_color else random_color(238, 255)
+        random_fg_color = random_color(10, 200, random.randint(220, 255))
+        color: ColorTuple = fg_color if fg_color else random_fg_color
+
         im = self.create_captcha_image(chars, color, background)
         self.create_noise_dots(im, color)
         self.create_noise_curve(im, color)
         im = im.filter(SMOOTH)
         return im
 
-    def generate(self, chars: str, format: str = 'png') -> BytesIO:
+    def generate(self, chars: str, format: str = 'png',
+                 bg_color: ColorTuple | None = None,
+                 fg_color: ColorTuple | None = None) -> BytesIO:
         """Generate an Image Captcha of the given characters.
 
         :param chars: text to be generated.
         :param format: image file format
+        :param bg_color: background color of the image in rgb format (r, g, b).
+        :param fg_color: foreground color of the text in rgba format (r,g,b,a).
         """
-        im = self.generate_image(chars)
+        im = self.generate_image(chars, bg_color=bg_color, fg_color=fg_color)
         out = BytesIO()
         im.save(out, format=format)
         out.seek(0)
         return out
 
-    def write(self, chars: str, output: str, format: str = 'png') -> None:
+    def write(self, chars: str, output: str, format: str = 'png',
+              bg_color: ColorTuple | None = None,
+              fg_color: ColorTuple | None = None) -> None:
         """Generate and write an image CAPTCHA data to the output.
 
         :param chars: text to be generated.
         :param output: output destination.
         :param format: image file format
+        :param bg_color: background color of the image in rgb format (r, g, b).
+        :param fg_color: foreground color of the text in rgba format (r,g,b,a).
         """
-        im = self.generate_image(chars)
+        im = self.generate_image(chars, bg_color=bg_color, fg_color=fg_color)
         im.save(output, format=format)
 
 
