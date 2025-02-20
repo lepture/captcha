@@ -38,8 +38,6 @@ build-backend = "setuptools.build_meta"
 dev = [
     "pytest",
     "pytest-cov",
-]
-lint = [
     "mypy",
     "ruff",
 ]
