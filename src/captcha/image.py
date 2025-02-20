@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import random
 import typing as t
-from PIL.Image import new as createImage, Image, QUAD, BILINEAR
+from PIL.Image import new as createImage, Image, Transform, Resampling
 from PIL.ImageDraw import Draw, ImageDraw
 from PIL.ImageFilter import SMOOTH
 from PIL.ImageFont import FreeTypeFont, truetype
@@ -115,14 +115,14 @@ class ImageCaptcha:
 
         dx1 = random.randint(*self.character_offset_dx)
         dy1 = random.randint(*self.character_offset_dy)
-        im = createImage('RGBA', (w + dx1, h + dy1))
+        im = createImage('RGBA', (int(w) + dx1, int(h) + dy1))
         Draw(im).text((dx1, dy1), c, font=font, fill=color)
 
         # rotate
         im = im.crop(im.getbbox())
         im = im.rotate(
             random.uniform(*self.character_rotate),
-            BILINEAR,
+            Resampling.BILINEAR,
             expand=True,
         )
 
@@ -142,7 +142,7 @@ class ImageCaptcha:
             w2 - x2, -y1,
         )
         im = im.resize((w2, h2))
-        im = im.transform((w, h), QUAD, data)
+        im = im.transform((int(w), int(h)), Transform.QUAD, data)
         return im
 
     def create_captcha_image(
