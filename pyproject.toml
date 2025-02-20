@@ -34,6 +34,16 @@ Source = "https://github.com/lepture/captcha"
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-cov",
+]
+lint = [
+    "mypy",
+    "ruff",
+]
+
 [tool.setuptools.dynamic]
 version = {attr = "captcha.__version__"}
 
