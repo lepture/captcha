@@ -7,6 +7,14 @@ Changelog
 
 ----
 
+v0.7.0
+------
+
+Released on Feb 20, 2025
+
+- Fix for ``Pillow >= 11``.
+- Add voice data A to Z, via :pull:`77`.
+
 v0.6.0
 ------
 
