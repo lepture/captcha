@@ -8,7 +8,7 @@
 
 from __future__ import annotations
 import os
-import random
+import secrets
 import typing as t
 from PIL.Image import new as createImage, Image, Transform, Resampling
 from PIL.ImageDraw import Draw, ImageDraw
@@ -80,13 +80,13 @@ class ImageCaptcha:
     @staticmethod
     def create_noise_curve(image: Image, color: ColorTuple) -> Image:
         w, h = image.size
-        x1 = random.randint(0, int(w / 5))
-        x2 = random.randint(w - int(w / 5), w)
-        y1 = random.randint(int(h / 5), h - int(h / 5))
-        y2 = random.randint(y1, h - int(h / 5))
+        x1 = secrets.randbelow(int(w / 5) + 1)
+        x2 = secrets.randbelow(w - int(w / 5) + 1) + int(w / 5)
+        y1 = secrets.randbelow(h - 2 * int(h / 5) + 1) + int(h / 5)
+        y2 = secrets.randbelow(h - y1 - int(h / 5) + 1) + y1
         points = [x1, y1, x2, y2]
-        end = random.randint(160, 200)
-        start = random.randint(0, 20)
+        end = secrets.randbelow(41) + 160
+        start = secrets.randbelow(21)
         Draw(image).arc(points, start, end, fill=color)
         return image
 
@@ -99,8 +99,8 @@ class ImageCaptcha:
         draw = Draw(image)
         w, h = image.size
         while number:
-            x1 = random.randint(0, w)
-            y1 = random.randint(0, h)
+            x1 = secrets.randbelow(w + 1)
+            y1 = secrets.randbelow(h + 1)
             draw.line(((x1, y1), (x1 - 1, y1 - 1)), fill=color, width=width)
             number -= 1
         return image
@@ -110,29 +110,29 @@ class ImageCaptcha:
             c: str,
             draw: ImageDraw,
             color: ColorTuple) -> Image:
-        font = random.choice(self.truefonts)
+        font = secrets.choice(self.truefonts)
         _, _, w, h = draw.multiline_textbbox((1, 1), c, font=font)
 
-        dx1 = random.randint(*self.character_offset_dx)
-        dy1 = random.randint(*self.character_offset_dy)
+        dx1 = secrets.randbelow(self.character_offset_dx[1] - self.character_offset_dx[0] + 1) + self.character_offset_dx[0]
+        dy1 = secrets.randbelow(self.character_offset_dy[1] - self.character_offset_dy[0] + 1) + self.character_offset_dy[0]
         im = createImage('RGBA', (int(w) + dx1, int(h) + dy1))
         Draw(im).text((dx1, dy1), c, font=font, fill=color)
 
         # rotate
         im = im.crop(im.getbbox())
         im = im.rotate(
-            random.uniform(*self.character_rotate),
+            self.character_rotate[0] + (secrets.randbits(32) / (2**32)) * (self.character_rotate[1] - self.character_rotate[0]),
             Resampling.BILINEAR,
             expand=True,
         )
 
         # warp
-        dx2 = w * random.uniform(*self.character_warp_dx)
-        dy2 = h * random.uniform(*self.character_warp_dy)
-        x1 = int(random.uniform(-dx2, dx2))
-        y1 = int(random.uniform(-dy2, dy2))
-        x2 = int(random.uniform(-dx2, dx2))
-        y2 = int(random.uniform(-dy2, dy2))
+        dx2 = w * (secrets.randbits(32) / (2**32)) * (self.character_warp_dx[1] - self.character_warp_dx[0]) + self.character_warp_dx[0]
+        dy2 = h * (secrets.randbits(32) / (2**32)) * (self.character_warp_dy[1] - self.character_warp_dy[0]) + self.character_warp_dy[0]
+        x1 = int(secrets.randbits(32) / (2**32) * (dx2 - (-dx2)) + (-dx2))
+        y1 = int(secrets.randbits(32) / (2**32) * (dy2 - (-dy2)) + (-dy2))
+        x2 = int(secrets.randbits(32) / (2**32) * (dx2 - (-dx2)) + (-dx2))
+        y2 = int(secrets.randbits(32) / (2**32) * (dy2 - (-dy2)) + (-dy2))
         w2 = w + abs(x1) + abs(x2)
         h2 = h + abs(y1) + abs(y2)
         data = (
@@ -163,7 +163,7 @@ class ImageCaptcha:
 
         images: list[Image] = []
         for c in chars:
-            if random.random() > self.word_space_probability:
+            if secrets.randbits(32) / (2**32) > self.word_space_probability:
                 images.append(self._draw_character(" ", draw, color))
             images.append(self._draw_character(c, draw, color))
 
@@ -180,7 +180,7 @@ class ImageCaptcha:
             w, h = im.size
             mask = im.convert('L').point(self.lookup_table)
             image.paste(im, (offset, int((self._height - h) / 2)), mask)
-            offset = offset + w + random.randint(-rand, 0)
+            offset = offset + w + (-secrets.randbelow(rand + 1))
 
         if width > self._width:
             image = image.resize((self._width, self._height))
@@ -197,7 +197,7 @@ class ImageCaptcha:
         :param fg_color: foreground color of the text in rgba format (r,g,b,a).
         """
         background = bg_color if bg_color else random_color(238, 255)
-        random_fg_color = random_color(10, 200, random.randint(220, 255))
+        random_fg_color = random_color(10, 200, secrets.randbelow(36) + 220)
         color: ColorTuple = fg_color if fg_color else random_fg_color
 
         im = self.create_captcha_image(chars, color, background)
@@ -241,9 +241,9 @@ def random_color(
         start: int,
         end: int,
         opacity: int | None = None) -> ColorTuple:
-    red = random.randint(start, end)
-    green = random.randint(start, end)
-    blue = random.randint(start, end)
+    red = secrets.randbelow(end - start + 1) + start
+    green = secrets.randbelow(end - start + 1) + start
+    blue = secrets.randbelow(end - start + 1) + start
     if opacity is None:
         return red, green, blue
     return red, green, blue, opacity

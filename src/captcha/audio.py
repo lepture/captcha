@@ -13,7 +13,7 @@ import os
 import copy
 import wave
 import struct
-import random
+import secrets
 import operator
 from functools import reduce
 
@@ -84,7 +84,7 @@ def create_noise(length: int, level: int = 4) -> bytearray:
     adjust = 128 - int(level / 2)
     i = 0
     while i < length:
-        v = random.randint(0, 256)
+        v = secrets.randbelow(257)
         noise[i] = v % level + adjust
         i += 1
     return noise
@@ -186,7 +186,7 @@ class AudioCaptcha:
 
         :param length: the return string length.
         """
-        return random.sample(self.choices, length)
+        return [secrets.choice(self.choices) for _ in range(length)]
 
     def load(self) -> None:
         """Load voice data into memory."""
@@ -203,27 +203,27 @@ class AudioCaptcha:
         self._cache[name] = data
 
     def _twist_pick(self, key: str) -> bytearray:
-        voice = random.choice(self._cache[key])
+        voice = secrets.choice(self._cache[key])
 
         # random change speed
-        speed = random.randrange(90, 120) / 100.0
+        speed = (secrets.randbelow(31) + 90) / 100.0
         voice = change_speed(voice, speed)
 
         # random change sound
-        level = random.randrange(80, 120) / 100.0
+        level = (secrets.randbelow(41) + 80) / 100.0
         voice = change_sound(voice, level)
         return voice
 
     def _noise_pick(self) -> bytearray:
-        key = random.choice(self.choices)
-        voice = random.choice(self._cache[key])
+        key = secrets.choice(self.choices)
+        voice = secrets.choice(self._cache[key])
         voice = copy.copy(voice)
         voice.reverse()
 
-        speed = random.randrange(8, 16) / 10.0
+        speed = (secrets.randbelow(9) + 8) / 10.0
         voice = change_speed(voice, speed)
 
-        level = random.randrange(2, 6) / 10.0
+        level = (secrets.randbelow(5) + 2) / 10.0
         voice = change_sound(voice, level)
         return voice
 
@@ -234,7 +234,7 @@ class AudioCaptcha:
             sound = self._noise_pick()
             end = pos + len(sound) + 1
             noise[pos:end] = mix_wave(sound, noise[pos:end])
-            pos = end + random.randint(0, int(WAVE_SAMPLE_RATE / 10))
+            pos = end + secrets.randbelow(int(WAVE_SAMPLE_RATE / 10) + 1)
         return noise
 
     def create_wave_body(self, chars: str) -> bytearray:
@@ -242,7 +242,7 @@ class AudioCaptcha:
         inters: t.List[int] = []
         for c in chars:
             voices.append(self._twist_pick(c))
-            i = random.randint(WAVE_SAMPLE_RATE, WAVE_SAMPLE_RATE * 3)
+            i = secrets.randbelow(WAVE_SAMPLE_RATE * 3 - WAVE_SAMPLE_RATE + 1) + WAVE_SAMPLE_RATE
             inters.append(i)
 
         durations = map(lambda a: len(a), voices)
