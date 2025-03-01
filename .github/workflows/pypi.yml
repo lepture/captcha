@@ -35,7 +35,7 @@ jobs:
   publish:
     environment:
       name: pypi-release
-      url: https://pypi.org/project/joserfc/
+      url: https://pypi.org/project/captcha/
     permissions:
       id-token: write
     name: release to pypi
@@ -62,7 +62,7 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: 20
     - run: npx changelogithub --no-group
       continue-on-error: true
       env:
