@@ -4,8 +4,8 @@ A captcha library that generates audio and image CAPTCHAs.
 
 
 [![GitHub Sponsor](https://badgen.net/badge/support/captcha/blue?icon=github)](https://github.com/sponsors/lepture)
-[![Build Status](https://github.com/lepture/captcha/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/lepture/captcha/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/lepture/captcha/branch/master/graph/badge.svg?token=xLjcXGMaeo)](https://codecov.io/gh/lepture/captcha)
+[![Build Status](https://github.com/lepture/captcha/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/lepture/captcha/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/lepture/captcha/branch/main/graph/badge.svg?token=xLjcXGMaeo)](https://codecov.io/gh/lepture/captcha)
 
 ## Install
 
