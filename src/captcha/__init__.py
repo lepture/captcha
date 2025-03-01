@@ -10,6 +10,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-__version__ = '0.7.0'
+__version__ = '0.7.1'
 __author__ = 'Hsiaoming Yang <me@lepture.com>'
 __homepage__ = 'https://github.com/lepture/captcha'
