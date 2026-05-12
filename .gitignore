@@ -23,3 +23,12 @@ demo.*
 coverage.xml
 tests/demo.*
 uv.lock
+
+# Examples output files
+examples/*.png
+examples/*.jpg
+examples/*.jpeg
+*.png
+*.jpg
+*.jpeg
+captcha_*.png

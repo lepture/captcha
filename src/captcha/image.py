@@ -16,10 +16,16 @@ from PIL.ImageFilter import SMOOTH
 from PIL.ImageFont import FreeTypeFont, truetype
 from io import BytesIO
 
-__all__ = ['ImageCaptcha']
+__all__ = ['ImageCaptcha', 'CharacterBoundingBox']
 
 
 ColorTuple = t.Union[t.Tuple[int, int, int], t.Tuple[int, int, int, int]]
+
+
+class CharacterBoundingBox(t.TypedDict):
+    """Type definition for character bounding box information."""
+    character: str
+    bbox: t.Tuple[int, int, int, int]  # (x, y, width, height)
 
 DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
 DEFAULT_FONTS = [os.path.join(DATA_DIR, 'DroidSansMono.ttf')]
@@ -205,6 +211,116 @@ class ImageCaptcha:
         self.create_noise_curve(im, color)
         im = im.filter(SMOOTH)
         return im
+
+    def generate_with_bounding_boxes(self, chars: str,
+                                   bg_color: ColorTuple | None = None,
+                                   fg_color: ColorTuple | None = None) -> t.Tuple[Image, t.List[CharacterBoundingBox]]:
+        """Generate the image of the given characters with bounding box information.
+
+        :param chars: text to be generated.
+        :param bg_color: background color of the image in rgb format (r, g, b).
+        :param fg_color: foreground color of the text in rgba format (r,g,b,a).
+        :return: tuple of (Image, List[CharacterBoundingBox]) where each CharacterBoundingBox
+                 contains the character and its bounding box coordinates (x, y, width, height).
+        """
+        background = bg_color if bg_color else random_color(238, 255)
+        random_fg_color = random_color(10, 200, secrets.randbelow(36) + 220)
+        color: ColorTuple = fg_color if fg_color else random_fg_color
+
+        im, bboxes = self.create_captcha_image_with_bboxes(chars, color, background)
+        self.create_noise_dots(im, color)
+        self.create_noise_curve(im, color)
+        im = im.filter(SMOOTH)
+        return im, bboxes
+
+    def create_captcha_image_with_bboxes(
+            self,
+            chars: str,
+            color: ColorTuple,
+            background: ColorTuple) -> t.Tuple[Image, t.List[CharacterBoundingBox]]:
+        """Create the CAPTCHA image with bounding box tracking.
+
+        :param chars: text to be generated.
+        :param color: color of the text.
+        :param background: color of the background.
+        :return: tuple of (Image, List[CharacterBoundingBox])
+
+        The color should be a tuple of 3 numbers, such as (0, 255, 255).
+        """
+        image = createImage('RGB', (self._width, self._height), background)
+        draw = Draw(image)
+
+        # Handle empty string case
+        if not chars:
+            return image, []
+
+        images: list[Image] = []
+        char_indices: list[int] = []  # Track which character each image corresponds to
+        char_index = 0
+        
+        for c in chars:
+            if secrets.randbits(32) / (2**32) > self.word_space_probability:
+                images.append(self._draw_character(" ", draw, color))
+                char_indices.append(-1)  # -1 indicates space
+            images.append(self._draw_character(c, draw, color))
+            char_indices.append(char_index)
+            char_index += 1
+
+        text_width = sum([im.size[0] for im in images])
+
+        width = max(text_width, self._width)
+        image = image.resize((width, self._height))
+
+        average = int(text_width / len(chars))
+        rand = int(self.word_offset_dx * average)
+        offset = int(average * 0.1)
+
+        # Track bounding boxes for actual characters (not spaces)
+        bounding_boxes: list[CharacterBoundingBox] = []
+        
+        for i, (im, char_idx) in enumerate(zip(images, char_indices)):
+            w, h = im.size
+            mask = im.convert('L').point(self.lookup_table)
+            y_pos = int((self._height - h) / 2)
+            
+            # Paste the character image
+            image.paste(im, (offset, y_pos), mask)
+            
+            # Record bounding box for actual characters (not spaces)
+            if char_idx >= 0:
+                # Clamp bounding box coordinates to ensure they stay within image bounds
+                x = max(0, offset)
+                y = max(0, y_pos)
+                box_w = min(w, self._width - x) if width <= self._width else w
+                box_h = min(h, self._height - y)
+                
+                bounding_boxes.append({
+                    'character': chars[char_idx],
+                    'bbox': (x, y, box_w, box_h)
+                })
+            
+            offset = offset + w + (-secrets.randbelow(rand + 1))
+
+        # Handle final image resizing and adjust bounding boxes accordingly
+        if width > self._width:
+            scale_factor = self._width / width
+            image = image.resize((self._width, self._height))
+            
+            # Adjust bounding boxes for the resize and ensure they stay within bounds
+            for bbox in bounding_boxes:
+                x, y, w, h = bbox['bbox']
+                new_x = int(x * scale_factor)
+                new_w = int(w * scale_factor)
+                
+                # Ensure the scaled bounding box stays within image bounds
+                new_x = max(0, min(new_x, self._width))
+                new_w = min(new_w, self._width - new_x)
+                new_y = max(0, min(y, self._height))
+                new_h = min(h, self._height - new_y)
+                
+                bbox['bbox'] = (new_x, new_y, new_w, new_h)
+
+        return image, bounding_boxes
 
     def generate(self, chars: str, format: str = 'png',
                  bg_color: ColorTuple | None = None,
